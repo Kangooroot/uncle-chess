@@ -4,9 +4,9 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run typecheck && vite build",
+    "build": "yarn typecheck && vite build",
     "preview": "vite preview",
-    "deploy": "npm run build && wrangler deploy",
+    "deploy": "yarn build && wrangler deploy",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.client.json && tsc -p tsconfig.worker.json",
     "cf-types": "wrangler types"
@@ -21,6 +21,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.63.0",
+    "@cloudflare/workers-types": "^5.20261006.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
@@ -28,5 +29,14 @@
     "vite": "^8.3.3",
     "vitest": "^5.0.3",
     "wrangler": "^4.148.0"
+  },
+  "packageManager": "yarn@4.18.1",
+  "dependenciesMeta": {
+    "esbuild": {
+      "built": true
+    },
+    "workerd": {
+      "built": true
+    }
   }
 }
