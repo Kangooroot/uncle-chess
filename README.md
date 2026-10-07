@@ -4,11 +4,13 @@ Chessboard-based game modes invented by my uncle, playable 1v1 in the browser.
 
 ## Development
 
+This project uses **Yarn 4** (pinned in `.yarn/releases/`, no global install needed beyond any `yarn`). Do not use npm.
+
 ```sh
-npm install
-npm run dev        # http://localhost:5173: front end + game server, locally
-npm test           # rules engine tests
-npm run typecheck
+yarn install
+yarn dev           # http://localhost:5173: front end + game server, locally
+yarn test          # rules engine tests
+yarn typecheck
 ```
 
 To play locally: create a game, then open the link in another browser (or a private window).
@@ -16,11 +18,11 @@ To play locally: create a game, then open the link in another browser (or a priv
 ## Deployment
 
 ```sh
-npx wrangler login # once
-npm run deploy
+yarn wrangler login # once
+yarn deploy
 ```
 
-After changing `wrangler.jsonc`, regenerate the types: `npm run cf-types`.
+After changing `wrangler.jsonc`, regenerate the types: `yarn cf-types`.
 
 ## Layout
 
