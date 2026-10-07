@@ -13,6 +13,7 @@ Decided on 2026-10-07 (see [`history/2026-10-07-stack-choice.md`](../history/202
 | Real time | **Cloudflare Workers + Durable Objects** via `partyserver` / `partysocket` | One game = one `GameRoom` = one Durable Object |
 | Hosting | **Cloudflare** (free tier) | Front end and server deployed together |
 | Tests | **Vitest** | Rules engine tests |
+| Package manager | **Yarn 4** (`node-modules` linker) | Dependencies and scripts. Never npm |
 
 Rejected: Next.js (too heavy, no WebSockets, SSR not needed), Supabase/Firebase, Socket.io on a VPS. Details in the history.
 
@@ -35,10 +36,17 @@ vite.config.ts      Vite config (React + Cloudflare plugins)
 vitest.config.ts    Vitest config, separate: the Cloudflare plugin conflicts with Vitest
 ```
 
+## Package manager
+
+- **Always Yarn, never npm or npx**: `yarn install`, `yarn add [-D] <pkg>`, `yarn <script>`, `yarn <bin>` for a local binary (e.g. `yarn wrangler`), `yarn dlx <pkg>` instead of `npx`.
+- Yarn 4.18 is pinned by `packageManager` in `package.json` and `yarnPath` in `.yarnrc.yml`, so a global Yarn 1 automatically delegates to it.
+- `nodeLinker: node-modules` (not Plug'n'Play): TypeScript 7 and Wrangler don't support PnP well.
+- Install scripts are disabled by default in Yarn 4. Packages that need them are allowed one by one in `dependenciesMeta` (`built: true`), currently `esbuild` and `workerd`.
+
 ## Commands
 
-- `npm run dev`: front end and server, locally
-- `npm test`: tests
-- `npm run typecheck`: type checking (`tsconfig.client.json` and `tsconfig.worker.json` are separate because browser and Worker global types are incompatible)
-- `npm run deploy`: build and deploy to Cloudflare
-- `npm run cf-types`: rerun after any change to `wrangler.jsonc`
+- `yarn dev`: front end and server, locally
+- `yarn test`: tests
+- `yarn typecheck`: type checking (`tsconfig.client.json` and `tsconfig.worker.json` are separate because browser and Worker global types are incompatible)
+- `yarn deploy`: build and deploy to Cloudflare
+- `yarn cf-types`: rerun after any change to `wrangler.jsonc`
