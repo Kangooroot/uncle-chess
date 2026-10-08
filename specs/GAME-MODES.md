@@ -77,6 +77,13 @@ Each mode has **tests** describing its specific rules. Its rules are written in 
 - chess.js is monolithic: we cannot extract building blocks from it or change a rule. The building-block engine (`src/engine/`) will therefore be written in-house. chess.js stays useful in tests, to check that our classic mode generates exactly the same moves.
 - Migration planned when the first non-classic mode is added: `Variant` → `GameMode`, `src/rules/` → `src/engine/` + `src/modes/`, and a generic protocol (actions and views instead of FEN and moves).
 
+## Modes
+
+| Id | Name | Spec | Status |
+|---|---|---|---|
+| `classic` | Classic chess | (chess.js) | Playable |
+| `tourcoing` | Tourcoing chess | [`modes/tourcoing.md`](modes/tourcoing.md) | Spec draft |
+
 ## Open questions
 
 - Are all modes turn-based, or can some be simultaneous?
