@@ -11,7 +11,7 @@ Decided on 2026-10-08 (see [`history/2026-10-08-branch-workflow.md`](../history/
 ## Pull requests
 
 - Claude opens **one pull request per branch**, targeting `main`, as soon as the topic is pushed.
-- Before pushing: `yarn typecheck` and `yarn test` must pass.
+- Before pushing: `yarn typecheck` and `yarn test` must pass locally. CI runs them again on the pull request.
 - Description: what changed and why, how it was checked, anything left open.
 
 ## Big pull requests
@@ -24,3 +24,12 @@ Claude **warns the user** when a pull request becomes big enough to deserve a ca
 - a migration (e.g. `Variant` → `GameMode`) or a breaking change.
 
 The warning says what makes it big and which parts deserve the closest look.
+
+## Continuous integration and deployment
+
+Decided on 2026-10-08 (see [`history/2026-10-08-ci-and-deploy.md`](../history/2026-10-08-ci-and-deploy.md)).
+
+- `.github/workflows/ci.yml`: on every pull request, `yarn typecheck` and `yarn test`. A pull request is not mergeable while CI is red.
+- `.github/workflows/deploy.yml`: on every push to `main` (so on every merge), runs CI again, then `yarn deploy` to Cloudflare. Deployments are queued, never cancelled halfway.
+- Production is therefore always what is on `main`. Do not deploy a branch by hand.
+- Required GitHub secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.
