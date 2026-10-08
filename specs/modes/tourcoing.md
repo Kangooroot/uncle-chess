@@ -1,69 +1,82 @@
 # Tourcoing chess
 
-> **Status: draft.** Written from a short rule summary. Every point marked **To confirm** must be settled before implementation. The detailed rules live in an earlier conversation that Claude could not access.
+> **Status: draft.** The points marked **To confirm** must be settled before implementation.
 
 Mode id: `tourcoing`. First non-classic mode of the platform: a **close mode** (see [`../GAME-MODES.md`](../GAME-MODES.md)), i.e. classic chess with the changes below. Anything not mentioned here follows classic chess rules.
 
 ## 1. Setup
 
-### 1.1 Kings in the corners
-Each king starts in a corner of its own back rank instead of on the e-file.
+### 1.1 Armies in opposite corners
+The two armies do not face each other across the board. Each one is gathered around a corner:
 
-- **To confirm:** which corner (a1/a8 or h1/h8)? Mirrored or point-symmetric between white and black?
-- **To confirm:** what goes on the king's usual square (e1/e8), and where does the rook that used to stand in that corner go?
+- **white** around **a1**, with the white king **on a1**;
+- **black** around **h8**, with the black king **on h8**.
 
-### 1.2 The "fou fou" (crazy bishop)
-A new piece, the **fou fou**, starts on **h2** (white) and presumably **h7** (black).
+### 1.2 Start position is data
+The exact placement of the pieces is a **preset**: a data file (e.g. JSON) describing the piece on each square. It is not hard-coded in the rules, so it can be adjusted without touching code.
 
-- **To confirm:** how does it move and capture?
-- **To confirm:** what happens to the h-pawn it replaces? Does it disappear, or move elsewhere?
-- **To confirm:** can a pawn promote to a fou fou?
+- **To do:** Rémi will provide the mockup of the start position, from which the preset is written.
 
-## 2. Castling
+## 2. Pawn direction
+
+This is the core of the mode: **pawns of the two sides do not move toward each other**.
+
+| Side | "Forward" | Promotion line | Example |
+|---|---|---|---|
+| White | **right**: towards the h-file (file +1) | the **h-file** | c3 → d3 |
+| Black | **down**: towards rank 1 (rank −1) | **rank 1** | f6 → f5 |
+
+Every pawn rule is applied along that direction:
+
+- a pawn moves one square forward, or two from its starting square;
+- it captures one square **diagonally forward** (white on c3 captures on d2 or d4; black on f6 captures on e5 or g5);
+- en passant works the same way, along the pawn's direction;
+- it promotes when it reaches its promotion line.
+
+- **To confirm:** a white pawn and a black pawn now move on perpendicular lines. Is en passant kept? Can a pawn be blocked sideways by an enemy pawn crossing its path? (Both follow naturally from the rules above, but they will feel unusual in play.)
+
+## 3. Castling
 Castling **swaps the king and a rook**: each takes the other's square.
 
-- **To confirm:** do the classic conditions still apply (neither piece has moved, no piece between them, king not in check, does not pass through or land on an attacked square)?
-- **To confirm:** with the king in a corner, is castling possible with both rooks, or only one?
+The classic conditions still apply:
 
-## 3. Pawns, rare pawns and hyperpawns
+- neither the king nor that rook has moved;
+- every square between them is empty;
+- the king is not in check, does not pass through an attacked square and does not land on one (the squares the king "passes through" are those between its start and target squares).
 
-### 3.1 Vocabulary
-- **Pawn**: the classic pawn.
+## 4. Promotion, rare pawns and hyperpawns
+
+### 4.1 Vocabulary
+- **Pawn**: a pawn with the direction rules above.
+- **Rare pawn**: a pawn obtained by promotion (see 4.2).
 - **Hyperpawn**: an upgraded pawn that can always move **1 or 2 squares** forward.
-- **Rare pawn**: a pawn obtained by promotion (see 3.2).
 
-### 3.2 Promotion
-When a pawn reaches the last rank:
+### 4.2 Promotion
+On reaching its promotion line, a pawn promotes as in classic chess (queen, rook, bishop, knight), **or into a pawn**. The result is then a **rare pawn**.
 
-- it can promote as in classic chess, but **never into an opponent's piece**;
-- it can also **promote into a pawn**. The result is a **rare pawn**.
-- **To confirm:** what does "no opponent's piece" mean? (Classic promotion can't produce an enemy piece anyway. Is this about pieces that exist only on the opponent's side, or about piece types the opponent has lost?)
-- **To confirm:** where does a rare pawn go? It is already on the last rank, so it cannot move forward. Does it go back to its starting rank? Does it change direction?
+- **To confirm:** a rare pawn appears on the promotion line, where it can no longer move forward. Where does it go, and in which direction does it move afterwards?
 
-### 3.3 Hyperpawn
+### 4.3 Hyperpawn
 - A pawn can become a **hyperpawn**. A **rare pawn** can too.
 - A hyperpawn moves **1 or 2 squares** forward on every move, not only its first one.
-- **To confirm:** how and when does a pawn become a hyperpawn (a choice made on a move, a square reached, a cost)?
-- **To confirm:** does it capture like a pawn? Can it jump over a piece on its 2-square move? Is it subject to en passant, and does it give en passant?
+- **To confirm (Rémi is checking):** how and when does a pawn become a hyperpawn? Does it capture like a pawn? Can it jump over a piece on its 2-square move? Does en passant apply to it?
 
-## 4. Game endings
+## 5. Game endings
 
-### 4.1 New win conditions
-- A **hyperpawn** reaching the last rank **wins the game** for its owner.
-- A **rare pawn** reaching the last rank does **not** win.
-- **To confirm:** "reaching the last rank": the opponent's back rank, or for a rare pawn, wherever its new goal is?
+### 5.1 New win conditions
+- A **hyperpawn** reaching its promotion line **wins the game** for its owner.
+- A **rare pawn** reaching it does **not** win.
 
-### 4.2 Threefold repetition
-A threefold repetition is **not a draw**: the player who causes it **loses**.
+### 5.2 Threefold repetition
+A threefold repetition is **not a draw**: the player whose move produces the third occurrence of the position **loses**. This is detected and applied automatically, with no claim needed.
 
-- **To confirm:** is the loser the player whose move produces the third occurrence?
-- **To confirm:** is it automatic, or must the opponent claim it?
+### 5.3 Unchanged
+Unless stated otherwise, the other endings stay classic: checkmate wins; stalemate, the fifty-move rule and insufficient material are draws; resignation.
 
-### 4.3 Unchanged (to confirm)
-Checkmate wins, stalemate is a draw, plus the fifty-move rule, insufficient material and resignation, all as in classic chess. **To confirm** that none of them change.
+## 6. Implementation notes
 
-## 5. Implementation notes
-
-- Not implementable with chess.js: new piece, new start position, new castling, new pawn kinds, new win conditions. This mode triggers the migration described in [`../GAME-MODES.md`](../GAME-MODES.md) (`Variant` → `GameMode`, in-house `src/engine/`).
+- Not implementable with chess.js: custom start position, sideways pawns, swap castling, pawn kinds, new win conditions. This mode triggers the migration described in [`../GAME-MODES.md`](../GAME-MODES.md) (`Variant` → `GameMode`, in-house `src/engine/`).
+- The engine's pawn block must take a **direction per side** as a parameter, not assume "up for white, down for black".
+- The start position comes from a preset file, which is also useful for other modes.
 - State must track each pawn's kind (pawn, rare pawn, hyperpawn) and the position history (for the repetition rule).
-- UI needs: a fou fou piece, a visual distinction for rare pawns and hyperpawns, an extended promotion picker (pawn option), and a way to turn a pawn into a hyperpawn.
+- UI needs: a visual distinction for rare pawns and hyperpawns, a promotion picker with a pawn option, a way to turn a pawn into a hyperpawn, and something that makes the pawn direction readable at a glance (it is unusual).
