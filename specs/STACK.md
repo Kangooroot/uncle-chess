@@ -48,5 +48,5 @@ vitest.config.ts    Vitest config, separate: the Cloudflare plugin conflicts wit
 - `yarn dev`: front end and server, locally
 - `yarn test`: tests
 - `yarn typecheck`: type checking (`tsconfig.client.json` and `tsconfig.worker.json` are separate because browser and Worker global types are incompatible)
-- `yarn deploy`: build and deploy to Cloudflare
+- `yarn deploy`: build and deploy to Cloudflare. Production is normally deployed by CI on merge to `main` (see [`WORKFLOW.md`](WORKFLOW.md)); run it by hand only in an emergency
 - `yarn cf-types`: rerun after any change to `wrangler.jsonc`

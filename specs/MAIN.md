@@ -11,6 +11,7 @@ A platform of chessboard-based game modes invented by my uncle. 1v1 multiplayer,
 
 - [`STACK.md`](STACK.md): tech stack, architecture principles, commands.
 - [`GAME-MODES.md`](GAME-MODES.md): game modes, reusable building blocks, game mode contract.
+- [`WORKFLOW.md`](WORKFLOW.md): branches and pull requests.
 - [`COMMITS.md`](COMMITS.md): commit convention (gitmoji + Conventional Commits), used by `/commit`.
 - `modes/<id>.md`: rules of each game mode.
 
