@@ -5,6 +5,7 @@ Project specifications, to read and follow at all times:
 @specs/MAIN.md
 @specs/STACK.md
 @specs/GAME-MODES.md
+@specs/ENGINE.md
 @specs/WORKFLOW.md
 
 The commit convention is in `specs/COMMITS.md` (read it before any commit).
