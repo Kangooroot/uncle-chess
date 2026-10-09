@@ -16,7 +16,7 @@ export function Game({ id, name }: { id: string; name: string }) {
   const socket = usePartySocket({
     party: "game-room",
     room: id,
-    query: { token: getToken(), name },
+    query: { token: getToken(), name, ...(soloRequested() ? { solo: "" } : {}) },
     onMessage(event) {
       const msg: ServerMessage = JSON.parse(event.data);
       if (msg.type === "welcome") setSeat(msg.seat);
@@ -35,7 +35,8 @@ export function Game({ id, name }: { id: string; name: string }) {
   if (!state || !seat) return <main className="game">Connecting…</main>;
 
   const position = optimistic ?? state.position;
-  const myTurn = seat === position.turn && position.status.kind === "playing";
+  const mySide = (color: string) => seat === color || seat === "both";
+  const myTurn = mySide(position.turn) && position.status.kind === "playing";
 
   function onPieceDrop({ piece, sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
     if (!state || !myTurn || !targetSquare) return false;
@@ -72,7 +73,7 @@ export function Game({ id, name }: { id: string; name: string }) {
             position: position.fen,
             boardOrientation: seat === "b" ? "black" : "white",
             allowDragging: myTurn,
-            canDragPiece: ({ piece }) => piece.pieceType[0] === seat,
+            canDragPiece: ({ piece }) => piece.pieceType[0] === position.turn,
             onPieceDrop,
           }}
         />
@@ -87,11 +88,17 @@ export function Game({ id, name }: { id: string; name: string }) {
 function statusText(position: Position, seat: Seat): string {
   const { status } = position;
   if (status.kind === "checkmate") {
-    if (seat === "spectator") return `Checkmate, ${status.winner === "w" ? "white" : "black"} wins.`;
+    if (seat === "spectator" || seat === "both") return `Checkmate, ${status.winner === "w" ? "white" : "black"} wins.`;
     return status.winner === seat ? "Checkmate, you won!" : "Checkmate, you lost.";
   }
   if (status.kind === "draw") return "Draw.";
   const check = position.inCheck ? "Check! " : "";
-  if (seat === "spectator") return `${check}You are watching (${position.turn === "w" ? "white" : "black"} to move).`;
+  const toMove = `${position.turn === "w" ? "white" : "black"} to move`;
+  if (seat === "spectator") return `${check}You are watching (${toMove}).`;
+  if (seat === "both") return `${check}Solo game: ${toMove}.`;
   return check + (seat === position.turn ? "Your turn." : "Opponent's turn.");
+}
+
+function soloRequested(): boolean {
+  return import.meta.env.DEV && new URLSearchParams(location.search).has("solo");
 }
