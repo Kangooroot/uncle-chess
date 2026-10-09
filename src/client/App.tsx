@@ -14,23 +14,31 @@ export function App() {
       <NameForm
         initial={name}
         submitLabel={gameId ? "Join the game" : "Create a game"}
-        onSubmit={(newName) => {
+        onSubmit={(newName, solo) => {
           setName(newName);
           if (gameId) setNameState(newName);
-          else location.assign(`/g/${randomId(10)}`);
+          else location.assign(`/g/${randomId(10)}${solo ? "?solo" : ""}`);
         }}
+        // Solo play (one player holds both sides) is only available in development.
+        soloLabel={import.meta.env.DEV && !gameId ? "Create a solo game" : undefined}
       />
     </main>
   );
 }
 
-function NameForm(props: { initial: string; submitLabel: string; onSubmit: (name: string) => void }) {
+function NameForm(props: {
+  initial: string;
+  submitLabel: string;
+  soloLabel?: string;
+  onSubmit: (name: string, solo: boolean) => void;
+}) {
   const [value, setValue] = useState(props.initial);
   return (
     <form
       onSubmit={(e) => {
         e.preventDefault();
-        if (value.trim()) props.onSubmit(value.trim());
+        const solo = (e.nativeEvent as SubmitEvent).submitter?.dataset.solo !== undefined;
+        if (value.trim()) props.onSubmit(value.trim(), solo);
       }}
     >
       <input
@@ -43,6 +51,11 @@ function NameForm(props: { initial: string; submitLabel: string; onSubmit: (name
       <button type="submit" disabled={!value.trim()}>
         {props.submitLabel}
       </button>
+      {props.soloLabel && (
+        <button type="submit" data-solo disabled={!value.trim()}>
+          {props.soloLabel}
+        </button>
+      )}
     </form>
   );
 }

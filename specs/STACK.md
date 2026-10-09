@@ -23,6 +23,7 @@ Rejected: Next.js (too heavy, no WebSockets, SSR not needed), Supabase/Firebase,
 - **Shared rules**: the rules code runs identically in the browser and in the Worker. It must stay pure (no DOM, no Cloudflare APIs).
 - **No accounts**: a nickname + a secret token in `localStorage`. The token lets a player get their side back after a refresh. A game is joined through a `/g/<id>` link. First to join = white, second = black, anyone else is a spectator.
 - **No database**: a game's state is stored in its Durable Object.
+- **Solo play, development only**: a game opened with `?solo` gives both sides to the same player, to test a mode alone. Gated by `import.meta.env.DEV` on the client and the server, so the production build drops it.
 
 ## Code layout
 
