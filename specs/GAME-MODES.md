@@ -78,19 +78,17 @@ Each mode has **tests** describing its specific rules. Its rules are written in 
 
 ## Current state and migration
 
-- The current code (`src/rules/`, `Variant` interface) only contains the classic mode, fully delegated to chess.js.
-- chess.js is monolithic: we cannot extract building blocks from it or change a rule. The building-block engine (`src/engine/`) will therefore be written in-house. chess.js stays useful in tests, to check that our classic mode generates exactly the same moves.
-- Migration planned when the first non-classic mode is added: `Variant` → `GameMode`, `src/rules/` → `src/core/` + `src/chess/` + `src/modes/`, and a generic protocol (actions and mode states instead of FEN and moves). Plan in [`ENGINE.md`](ENGINE.md).
+- Done (PR `refactor/chess-engine`): `Variant` → `GameMode`, `src/rules/` (chess.js) → `src/core/` + `src/chess/` + `src/modes/`, and a generic protocol (mode states and actions instead of FEN and moves). See [`ENGINE.md`](ENGINE.md).
+- chess.js was monolithic (no building blocks, no rule changes), so the engine is in-house. chess.js stays in tests, to check that our classic mode generates exactly the same moves and endings.
 
 ## Modes
 
 | Id | Name | Spec | Status |
 |---|---|---|---|
-| `classic` | Classic chess | (chess.js) | Playable |
+| `classic` | Classic chess | (standard rules, tested against chess.js) | Playable |
 | `tourcoing` | Tourcoing chess | [`modes/tourcoing.md`](modes/tourcoing.md) | Spec validated |
 
 ## Open questions
 
 - Are all modes turn-based, or can some be simultaneous?
-- Is the mode chosen only when the game is created (proposal: yes, stored in the room)?
 - Should a mode be configurable (e.g. toggleable options), or is every combination a separate mode?

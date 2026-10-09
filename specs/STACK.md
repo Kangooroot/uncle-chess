@@ -9,10 +9,10 @@ Decided on 2026-10-07 (see [`history/2026-10-07-stack-choice.md`](../history/202
 | Language | **TypeScript** | Everywhere: client, server, rules |
 | Front end | **Vite + React** | Web app (2 screens: home, game) |
 | Board | **react-chessboard** (MIT) | Board rendering and drag & drop |
-| Rules | **chess.js**, wrapped in `src/rules/` | Classic chess. See [`GAME-MODES.md`](GAME-MODES.md) for the move to in-house building blocks |
+| Rules | In-house engine (`src/core/`, `src/chess/`, `src/modes/`) | Every mode, classic included. See [`ENGINE.md`](ENGINE.md). chess.js is a dev dependency, used to test our classic rules |
 | Real time | **Cloudflare Workers + Durable Objects** via `partyserver` / `partysocket` | One game = one `GameRoom` = one Durable Object |
 | Hosting | **Cloudflare** (free tier) | Front end and server deployed together |
-| Tests | **Vitest** | Rules engine tests |
+| Tests | **Vitest** | Rules engine tests (chess.js as the reference for classic chess) |
 | Lint | **Oxlint** | ESLint-compatible rules, no dependency on TypeScript's JS API (typescript-eslint does not support TypeScript 7) |
 | Formatting | **Prettier** | Code and config files, `printWidth` 120. Markdown is not formatted |
 | Package manager | **Yarn 4** (`node-modules` linker) | Dependencies and scripts. Never npm |
@@ -30,7 +30,9 @@ Rejected: Next.js (too heavy, no WebSockets, SSR not needed), Supabase/Firebase,
 ## Code layout
 
 ```
-src/rules/          rules engine (shared by client and server)
+src/core/           GameMode contract, board geometry (shared by all games)
+src/chess/          chess family engine and building blocks
+src/modes/          game modes and their registry
 src/server/         Worker (index.ts) and game room (GameRoom.ts)
 src/client/         React app
 src/protocol.ts     WebSocket messages client ⇄ server
