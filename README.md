@@ -11,6 +11,8 @@ yarn install
 yarn dev           # http://localhost:5173: front end + game server, locally
 yarn test          # rules engine tests
 yarn typecheck
+yarn lint          # Oxlint
+yarn format        # Prettier (VS Code formats on save with the recommended extensions)
 ```
 
 To play locally: create a game, then open the link in another browser (or a private window).
