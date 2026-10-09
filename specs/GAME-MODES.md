@@ -39,6 +39,8 @@ Examples of combinations:
 
 ## Game mode contract (target)
 
+Refined in [`ENGINE.md`](ENGINE.md) (generic status reasons, `Seat` viewer).
+
 Each mode is an object of **pure functions**. Its state must be **JSON-serializable**, since it is stored in the Durable Object and sent to clients.
 
 ```ts
@@ -63,11 +65,14 @@ interface GameMode<State, Action> {
 ## Code layout (target)
 
 ```
-src/engine/          reusable building blocks (board, pieces, legality, special moves, endings)
+src/core/            shared by all games: contract, board geometry, views
+src/chess/           chess family building blocks (pieces, legality, special moves, endings)
 src/modes/index.ts   registry of available modes
 src/modes/<id>/      one folder per mode: rules, tests, and UI if needed
 specs/modes/<id>.md  human-readable rules of the mode
 ```
+
+Details in [`ENGINE.md`](ENGINE.md). The single `src/engine/` folder planned at first is split into `src/core/` and `src/chess/`, so that games not based on chess do not depend on chess code.
 
 Each mode has **tests** describing its specific rules. Its rules are written in `specs/modes/<id>.md` before or during implementation.
 
@@ -75,7 +80,7 @@ Each mode has **tests** describing its specific rules. Its rules are written in 
 
 - The current code (`src/rules/`, `Variant` interface) only contains the classic mode, fully delegated to chess.js.
 - chess.js is monolithic: we cannot extract building blocks from it or change a rule. The building-block engine (`src/engine/`) will therefore be written in-house. chess.js stays useful in tests, to check that our classic mode generates exactly the same moves.
-- Migration planned when the first non-classic mode is added: `Variant` → `GameMode`, `src/rules/` → `src/engine/` + `src/modes/`, and a generic protocol (actions and views instead of FEN and moves).
+- Migration planned when the first non-classic mode is added: `Variant` → `GameMode`, `src/rules/` → `src/core/` + `src/chess/` + `src/modes/`, and a generic protocol (actions and mode states instead of FEN and moves). Plan in [`ENGINE.md`](ENGINE.md).
 
 ## Modes
 
