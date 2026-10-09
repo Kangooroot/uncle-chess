@@ -22,4 +22,4 @@ Read a spec only when the task touches its topic:
 
 - Yarn 4 only, never npm or npx (`yarn <script>`, `yarn dlx <pkg>`).
 - Before pushing: `yarn typecheck`, `yarn lint`, `yarn format:check`, `yarn test`.
-- Talk to the user in French, but write all code, comments, docs, specs, history files and commits in English.
+- Talk to the user in French, but write all code, comments, docs, specs, history files and commits in English. Exceptions in French: UI text, and pull request titles and descriptions.
