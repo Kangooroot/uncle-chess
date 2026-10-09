@@ -5,5 +5,5 @@
     "jsx": "react-jsx",
     "types": ["vite/client"]
   },
-  "include": ["src/client", "src/rules", "src/protocol.ts"]
+  "include": ["src/client", "src/core", "src/chess", "src/modes", "src/protocol.ts"]
 }

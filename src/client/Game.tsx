@@ -1,15 +1,16 @@
 import { useState } from "react";
-import { Chessboard, type PieceDropHandlerArgs } from "react-chessboard";
+import { Chessboard, type PieceDropHandlerArgs, type PositionDataType } from "react-chessboard";
 import { usePartySocket } from "partysocket/react";
-import type { ClientMessage, GameState, Seat, ServerMessage } from "../protocol";
-import { variants, type Move, type Position } from "../rules";
+import type { BoardView, Color, GameMode, Seat } from "../core";
+import { modes } from "../modes";
+import type { ClientMessage, GameState, ServerMessage } from "../protocol";
 import { getToken } from "./identity";
 
 export function Game({ id, name }: { id: string; name: string }) {
   const [seat, setSeat] = useState<Seat | null>(null);
   const [state, setState] = useState<GameState | null>(null);
-  // Position shown right after our move, while waiting for the server to confirm it.
-  const [optimistic, setOptimistic] = useState<Position | null>(null);
+  // Mode state shown right after our move, while waiting for the server to confirm it.
+  const [optimistic, setOptimistic] = useState<unknown>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -34,20 +35,19 @@ export function Game({ id, name }: { id: string; name: string }) {
 
   if (!state || !seat) return <main className="game">Connecting…</main>;
 
-  const position = optimistic ?? state.position;
-  const mySide = (color: string) => seat === color || seat === "both";
-  const myTurn = mySide(position.turn) && position.status.kind === "playing";
+  const mode = modes[state.mode];
+  const current = optimistic ?? state.state;
+  const view = mode.view(current, seat);
+  const player = mode.toPlay(current);
+  const myTurn = player !== null && (seat === player || seat === "both");
 
-  function onPieceDrop({ piece, sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
-    if (!state || !myTurn || !targetSquare) return false;
-    const isPawn = piece.pieceType[1] === "P";
-    const lastRank = targetSquare[1] === "8" || targetSquare[1] === "1";
-    const move: Move = { from: sourceSquare, to: targetSquare, ...(isPawn && lastRank ? { promotion: "q" } : {}) };
-
-    const next = variants[state.variant].play(state.moves, move);
+  function onPieceDrop({ sourceSquare, targetSquare }: PieceDropHandlerArgs): boolean {
+    if (!player || !myTurn || !targetSquare) return false;
+    const action = { from: sourceSquare, to: targetSquare };
+    const next = mode.play(current, action, player);
     if (!next) return false;
     setOptimistic(next);
-    socket.send(JSON.stringify({ type: "move", move } satisfies ClientMessage));
+    socket.send(JSON.stringify({ type: "action", action } satisfies ClientMessage));
     return true;
   }
 
@@ -70,33 +70,48 @@ export function Game({ id, name }: { id: string; name: string }) {
         <Chessboard
           options={{
             id: "game",
-            position: position.fen,
+            position: toPosition(view),
             boardOrientation: seat === "b" ? "black" : "white",
             allowDragging: myTurn,
-            canDragPiece: ({ piece }) => piece.pieceType[0] === position.turn,
+            canDragPiece: ({ piece }) => piece.pieceType[0] === view.turn,
             onPieceDrop,
           }}
         />
       </div>
 
-      <p className="status">{statusText(position, seat)}</p>
+      <p className="status">{statusText(mode, current, view, seat)}</p>
       {error && <p className="error">{error}</p>}
     </main>
   );
 }
 
-function statusText(position: Position, seat: Seat): string {
-  const { status } = position;
-  if (status.kind === "checkmate") {
-    if (seat === "spectator" || seat === "both") return `Checkmate, ${status.winner === "w" ? "white" : "black"} wins.`;
-    return status.winner === seat ? "Checkmate, you won!" : "Checkmate, you lost.";
+/** react-chessboard position: piece codes like "wK" ("w" + the kind in uppercase). */
+function toPosition(view: BoardView): PositionDataType {
+  const position: PositionDataType = {};
+  for (const [square, piece] of Object.entries(view.pieces)) {
+    if (piece) position[square] = { pieceType: piece.color + piece.kind.toUpperCase() };
   }
-  if (status.kind === "draw") return "Draw.";
-  const check = position.inCheck ? "Check! " : "";
-  const toMove = `${position.turn === "w" ? "white" : "black"} to move`;
+  return position;
+}
+
+function colorName(color: Color): string {
+  return color === "w" ? "white" : "black";
+}
+
+function statusText(mode: GameMode<unknown, unknown>, state: unknown, view: BoardView, seat: Seat): string {
+  const status = mode.status(state);
+  if (status.kind === "win") {
+    const reason = mode.reasons[status.reason] ?? status.reason;
+    if (seat === "spectator" || seat === "both") return `${reason}, ${colorName(status.winner)} wins.`;
+    return status.winner === seat ? `${reason}, you won!` : `${reason}, you lost.`;
+  }
+  if (status.kind === "draw") return `Draw: ${(mode.reasons[status.reason] ?? status.reason).toLowerCase()}.`;
+  const check = view.check.length > 0 ? "Check! " : "";
+  const turn = view.turn ?? "w";
+  const toMove = `${colorName(turn)} to move`;
   if (seat === "spectator") return `${check}You are watching (${toMove}).`;
   if (seat === "both") return `${check}Solo game: ${toMove}.`;
-  return check + (seat === position.turn ? "Your turn." : "Opponent's turn.");
+  return check + (seat === turn ? "Your turn." : "Opponent's turn.");
 }
 
 function soloRequested(): boolean {
