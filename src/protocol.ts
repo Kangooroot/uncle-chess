@@ -2,7 +2,8 @@
 
 import type { Color, Move, Position } from "./rules";
 
-export type Seat = Color | "spectator";
+// "both": one player holds both sides (solo play, development only).
+export type Seat = Color | "both" | "spectator";
 
 export type GameState = {
   variant: string;

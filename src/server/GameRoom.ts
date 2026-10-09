@@ -14,6 +14,8 @@ type Stored = {
 
 type ConnState = { seat: Seat };
 
+const COLORS: Color[] = ["w", "b"];
+
 export class GameRoom extends Server<Env> {
   game: Stored = {
     variant: defaultVariant.id,
@@ -31,8 +33,10 @@ export class GameRoom extends Server<Env> {
     const params = new URL(request.url).searchParams;
     const token = params.get("token") ?? "";
     const name = (params.get("name") ?? "").trim().slice(0, 30) || "Anonymous";
+    // Solo play (one player holds both sides) is only allowed in development.
+    const solo = import.meta.env.DEV && params.has("solo");
 
-    const seat = await this.takeSeat(token, name);
+    const seat = await this.takeSeat(token, name, solo);
     conn.setState({ seat });
     send(conn, { type: "welcome", seat });
     this.broadcastState();
@@ -49,7 +53,8 @@ export class GameRoom extends Server<Env> {
 
     const variant = variants[this.game.variant];
     const position = variant.position(this.game.moves);
-    if (conn.state?.seat !== position.turn) {
+    const seat = conn.state?.seat;
+    if (seat !== position.turn && seat !== "both") {
       return send(conn, { type: "error", message: "It's not your turn." });
     }
     if (!variant.play(this.game.moves, msg.move)) {
@@ -61,23 +66,21 @@ export class GameRoom extends Server<Env> {
     this.broadcastState();
   }
 
-  async takeSeat(token: string, name: string): Promise<Seat> {
-    for (const color of ["w", "b"] as const) {
-      if (token && this.game.tokens[color] === token) {
-        this.game.names[color] = name;
-        await this.save();
-        return color;
-      }
-    }
-    for (const color of ["w", "b"] as const) {
-      if (token && !this.game.tokens[color]) {
+  async takeSeat(token: string, name: string, solo: boolean): Promise<Seat> {
+    if (!token) return "spectator";
+    const colors = COLORS.filter((color) => this.game.tokens[color] === token);
+    // A new player takes the first free side, a solo player every free side.
+    if (colors.length === 0 || solo) {
+      const free = COLORS.filter((color) => !this.game.tokens[color]);
+      for (const color of solo ? free : free.slice(0, 1)) {
         this.game.tokens[color] = token;
-        this.game.names[color] = name;
-        await this.save();
-        return color;
+        colors.push(color);
       }
     }
-    return "spectator";
+    if (colors.length === 0) return "spectator";
+    for (const color of colors) this.game.names[color] = name;
+    await this.save();
+    return colors.length === 2 ? "both" : colors[0];
   }
 
   save() {
