@@ -23,4 +23,5 @@ Keep track of our ideation for the whole project in the [`history/`](../history/
 - Whenever we discuss something worth noting (decision, game mode rule, idea, abandoned approach, open question…), or something that deserves Claude's attention in future prompts, add a summary in a **new** markdown file.
 - Naming: `history/YYYY-MM-DD-short-topic.md` (e.g. `history/2026-10-07-history-setup.md`). Do not rewrite old files: if we change our minds, create a new file that references them.
 - Content: context, what was decided or proposed, open questions, points of attention for later.
-- Before working on a topic, read the relevant `history/` files.
+- Every new file gets a one-line entry in [`history/README.md`](../history/README.md), the index. It is the only history file that gets edited.
+- Before working on a topic, read the index, then only the relevant `history/` files.
