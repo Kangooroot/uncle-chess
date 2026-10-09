@@ -22,3 +22,4 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-09-lean-claude-context](2026-10-09-lean-claude-context.md) | Lighter `CLAUDE.md`: specs read on demand, this index | |
 | [2026-10-09-chess-engine-implementation](2026-10-09-chess-engine-implementation.md) | Classic chess on the new engine (PR 1); position key and other deviations from the proposal | |
 | [2026-10-09-french-ui](2026-10-09-french-ui.md) | UI text and pull request descriptions in French, hard-coded for now | |
+| [2026-10-09-move-hints](2026-10-09-move-hints.md) | Move hints, click-to-move, red king square in check; `BoardView.moves` | |
