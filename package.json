@@ -9,6 +9,9 @@
     "deploy": "yarn build && wrangler deploy",
     "test": "vitest run",
     "typecheck": "tsc -p tsconfig.client.json && tsc -p tsconfig.worker.json",
+    "lint": "oxlint --deny-warnings",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "cf-types": "wrangler types"
   },
   "dependencies": {
@@ -25,6 +28,8 @@
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
     "@vitejs/plugin-react": "^6.1.2",
+    "oxlint": "^1.87.0",
+    "prettier": "^3.9.9",
     "typescript": "^7.0.2",
     "vite": "^8.3.3",
     "vitest": "^5.0.3",

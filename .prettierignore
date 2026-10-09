@@ -1,0 +1,8 @@
+dist
+.wrangler
+.yarn
+yarn.lock
+worker-configuration.d.ts
+
+# Hand-written docs; history files must never be rewritten
+*.md
