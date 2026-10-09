@@ -13,6 +13,8 @@ Decided on 2026-10-07 (see [`history/2026-10-07-stack-choice.md`](../history/202
 | Real time | **Cloudflare Workers + Durable Objects** via `partyserver` / `partysocket` | One game = one `GameRoom` = one Durable Object |
 | Hosting | **Cloudflare** (free tier) | Front end and server deployed together |
 | Tests | **Vitest** | Rules engine tests |
+| Lint | **Oxlint** | ESLint-compatible rules, no dependency on TypeScript's JS API (typescript-eslint does not support TypeScript 7) |
+| Formatting | **Prettier** | Code and config files, `printWidth` 120. Markdown is not formatted |
 | Package manager | **Yarn 4** (`node-modules` linker) | Dependencies and scripts. Never npm |
 
 Rejected: Next.js (too heavy, no WebSockets, SSR not needed), Supabase/Firebase, Socket.io on a VPS. Details in the history.
@@ -48,6 +50,8 @@ vitest.config.ts    Vitest config, separate: the Cloudflare plugin conflicts wit
 
 - `yarn dev`: front end and server, locally
 - `yarn test`: tests
+- `yarn lint`: Oxlint, warnings fail (`.oxlintrc.json`)
+- `yarn format` / `yarn format:check`: Prettier, write or check
 - `yarn typecheck`: type checking (`tsconfig.client.json` and `tsconfig.worker.json` are separate because browser and Worker global types are incompatible)
 - `yarn deploy`: build and deploy to Cloudflare. Production is normally deployed by CI on merge to `main` (see [`WORKFLOW.md`](WORKFLOW.md)); run it by hand only in an emergency
 - `yarn cf-types`: rerun after any change to `wrangler.jsonc`

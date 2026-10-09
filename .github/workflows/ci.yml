@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   check:
-    name: Typecheck and tests
+    name: Typecheck, lint and tests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -20,4 +20,6 @@ jobs:
           cache: yarn
       - run: yarn install --immutable
       - run: yarn typecheck
+      - run: yarn lint
+      - run: yarn format:check
       - run: yarn test
