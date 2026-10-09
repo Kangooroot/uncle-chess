@@ -26,6 +26,7 @@ describe("classic", () => {
   });
 
   it("handles promotion", () => {
+    // prettier-ignore
     const moves = [
       m("h2", "h4"), m("g7", "g5"), m("h4", "g5"), m("h7", "h6"),
       m("g5", "h6"), m("f8", "g7"), m("h6", "g7"), m("a7", "a6"),

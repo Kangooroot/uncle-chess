@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Chessboard, type PieceDropHandlerArgs } from "react-chessboard";
-import usePartySocket from "partysocket/react";
+import { usePartySocket } from "partysocket/react";
 import type { ClientMessage, GameState, Seat, ServerMessage } from "../protocol";
 import { variants, type Move, type Position } from "../rules";
 import { getToken } from "./identity";

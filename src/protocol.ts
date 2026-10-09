@@ -13,8 +13,6 @@ export type GameState = {
 };
 
 export type ServerMessage =
-  | { type: "welcome"; seat: Seat }
-  | { type: "state"; state: GameState }
-  | { type: "error"; message: string };
+  { type: "welcome"; seat: Seat } | { type: "state"; state: GameState } | { type: "error"; message: string };
 
 export type ClientMessage = { type: "move"; move: Move };
