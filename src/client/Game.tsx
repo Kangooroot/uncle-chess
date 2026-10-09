@@ -33,7 +33,7 @@ export function Game({ id, name }: { id: string; name: string }) {
     },
   });
 
-  if (!state || !seat) return <main className="game">Connecting…</main>;
+  if (!state || !seat) return <main className="game">Connexion…</main>;
 
   const mode = modes[state.mode];
   const current = optimistic ?? state.state;
@@ -61,9 +61,9 @@ export function Game({ id, name }: { id: string; name: string }) {
     <main className="game">
       <header>
         <span>
-          ⬜ {state.players.w ?? "waiting…"} — ⬛ {state.players.b ?? "waiting…"}
+          ⬜ {state.players.w ?? "en attente…"} — ⬛ {state.players.b ?? "en attente…"}
         </span>
-        <button onClick={copyLink}>{copied ? "Link copied!" : "Copy link"}</button>
+        <button onClick={copyLink}>{copied ? "Lien copié !" : "Copier le lien"}</button>
       </header>
 
       <div className="board">
@@ -95,23 +95,23 @@ function toPosition(view: BoardView): PositionDataType {
 }
 
 function colorName(color: Color): string {
-  return color === "w" ? "white" : "black";
+  return color === "w" ? "les blancs" : "les noirs";
 }
 
 function statusText(mode: GameMode<unknown, unknown>, state: unknown, view: BoardView, seat: Seat): string {
   const status = mode.status(state);
   if (status.kind === "win") {
     const reason = mode.reasons[status.reason] ?? status.reason;
-    if (seat === "spectator" || seat === "both") return `${reason}, ${colorName(status.winner)} wins.`;
-    return status.winner === seat ? `${reason}, you won!` : `${reason}, you lost.`;
+    if (seat === "spectator" || seat === "both") return `${reason} : ${colorName(status.winner)} gagnent.`;
+    return status.winner === seat ? `${reason} : vous avez gagné !` : `${reason} : vous avez perdu.`;
   }
-  if (status.kind === "draw") return `Draw: ${(mode.reasons[status.reason] ?? status.reason).toLowerCase()}.`;
-  const check = view.check.length > 0 ? "Check! " : "";
+  if (status.kind === "draw") return `Partie nulle : ${(mode.reasons[status.reason] ?? status.reason).toLowerCase()}.`;
+  const check = view.check.length > 0 ? "Échec ! " : "";
   const turn = view.turn ?? "w";
-  const toMove = `${colorName(turn)} to move`;
-  if (seat === "spectator") return `${check}You are watching (${toMove}).`;
-  if (seat === "both") return `${check}Solo game: ${toMove}.`;
-  return check + (seat === turn ? "Your turn." : "Opponent's turn.");
+  const toMove = `aux ${turn === "w" ? "blancs" : "noirs"} de jouer`;
+  if (seat === "spectator") return `${check}Vous regardez la partie (${toMove}).`;
+  if (seat === "both") return `${check}Partie solo : ${toMove}.`;
+  return check + (seat === turn ? "À vous de jouer." : "À l'adversaire de jouer.");
 }
 
 function soloRequested(): boolean {

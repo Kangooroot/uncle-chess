@@ -13,14 +13,14 @@ export function App() {
       <h1>Uncle Chess</h1>
       <NameForm
         initial={name}
-        submitLabel={gameId ? "Join the game" : "Create a game"}
+        submitLabel={gameId ? "Rejoindre la partie" : "Créer une partie"}
         onSubmit={(newName, solo) => {
           setName(newName);
           if (gameId) setNameState(newName);
           else location.assign(`/g/${randomId(10)}${solo ? "?solo" : ""}`);
         }}
         // Solo play (one player holds both sides) is only available in development.
-        soloLabel={import.meta.env.DEV && !gameId ? "Create a solo game" : undefined}
+        soloLabel={import.meta.env.DEV && !gameId ? "Créer une partie solo" : undefined}
       />
     </main>
   );
@@ -43,7 +43,7 @@ function NameForm(props: {
     >
       <input
         autoFocus
-        placeholder="Your nickname"
+        placeholder="Votre pseudo"
         maxLength={30}
         value={value}
         onChange={(e) => setValue(e.target.value)}

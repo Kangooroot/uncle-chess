@@ -17,7 +17,7 @@ yarn format        # Prettier (VS Code formats on save with the recommended exte
 
 To play locally: create a game, then open the link in another browser (or a private window).
 
-To test alone: click **Create a solo game** (or add `?solo` to a game link). You hold both sides and play the white and black moves yourself. Solo play only exists in development (`yarn dev`): the button is hidden and the server ignores `?solo` in production.
+To test alone: click **Créer une partie solo** (or add `?solo` to a game link). You hold both sides and play the white and black moves yourself. Solo play only exists in development (`yarn dev`): the button is hidden and the server ignores `?solo` in production.
 
 ## Deployment
 

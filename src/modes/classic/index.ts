@@ -1,6 +1,6 @@
 import { classicRules, createChessMode } from "../../chess";
 
 export const classic = createChessMode(
-  { id: "classic", name: "Classic chess", description: "The standard rules of chess." },
+  { id: "classic", name: "Échecs classiques", description: "Les règles standard des échecs." },
   classicRules,
 );

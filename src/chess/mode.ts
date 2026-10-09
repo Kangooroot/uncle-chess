@@ -4,13 +4,13 @@ import { toSquare, type BoardView, type GameMode } from "../core";
 import { checkedRoyals, findMove, makeMove, settle, setup } from "./engine";
 import type { ChessAction, ChessRules, ChessState } from "./types";
 
-/** Display text of the reasons used by the standard ending rules. A mode adds its own with spread. */
+/** Display text (UI, in French) of the reasons used by the standard ending rules. A mode adds its own with spread. */
 export const STANDARD_REASONS: Record<string, string> = {
-  checkmate: "Checkmate",
-  stalemate: "Stalemate",
-  repetition: "Threefold repetition",
-  "fifty-moves": "Fifty-move rule",
-  material: "Insufficient material",
+  checkmate: "Échec et mat",
+  stalemate: "Pat",
+  repetition: "Triple répétition",
+  "fifty-moves": "Règle des cinquante coups",
+  material: "Matériel insuffisant",
 };
 
 const toPlay = (state: ChessState) => (state.status.kind === "playing" ? state.turn : null);
