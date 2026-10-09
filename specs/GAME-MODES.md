@@ -82,7 +82,7 @@ Each mode has **tests** describing its specific rules. Its rules are written in 
 | Id | Name | Spec | Status |
 |---|---|---|---|
 | `classic` | Classic chess | (chess.js) | Playable |
-| `tourcoing` | Tourcoing chess | [`modes/tourcoing.md`](modes/tourcoing.md) | Spec draft |
+| `tourcoing` | Tourcoing chess | [`modes/tourcoing.md`](modes/tourcoing.md) | Spec validated |
 
 ## Open questions
 

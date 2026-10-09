@@ -1,6 +1,6 @@
 # Tourcoing chess
 
-> **Status: draft.** The points marked **To confirm** must be settled before implementation.
+> **Status: validated** on 2026-10-09. Ready for implementation.
 
 Mode id: `tourcoing`. First non-classic mode of the platform: a **close mode** (see [`../GAME-MODES.md`](../GAME-MODES.md)), i.e. classic chess with the changes below. Anything not mentioned here follows classic chess rules. White moves first.
 
@@ -32,9 +32,9 @@ Uppercase = white, lowercase = black. FEN placement: `3pbr1k/4pnq1/4ppnr/P4ppb/1
 | Knights | b3, c2 | f7, g6 |
 | Pawns | a5, b4, c4, c3, d3, d2, e1 | d8, e7, e6, f6, f5, g5, h4 |
 
-The black army is the mirror image of the white army across the **a8–h1 diagonal** (square `(file, rank)` ↔ `(9 − rank, 9 − file)`), **except the bishops**: the mirrors of a2 and b1 are g8 and h7, but the black bishops stand on e8 and h5. All four bishops are on light squares.
+The black army is the mirror image of the white army across the **a8–h1 diagonal** (square `(file, rank)` ↔ `(9 − rank, 9 − file)`), **except the bishops**, on purpose: **all four bishops are on light squares** (white a2 and b1, black e8 and h5).
 
-- **To confirm:** are the bishops placed on purpose, or should they be mirrored (black on g8 / h7, or white on a4 / d1)?
+No white pawn starts on rank 8 and no black pawn on the a-file: such a pawn would already stand on its rare pawn goal (see 4.3).
 
 ### 1.2 Start position is data
 The placement above is stored as a **preset** (data, e.g. JSON or FEN), not hard-coded in the rules, so it can be adjusted without touching code.
@@ -50,13 +50,10 @@ This is the core of the mode: **pawns of the two sides do not move toward each o
 
 The two directions are mirror images across the a8–h1 diagonal, like the armies. Every pawn rule is applied along the pawn's direction:
 
-- a pawn moves one square forward onto an empty square, or two from its starting square if both are empty;
+- a pawn moves one square forward onto an empty square, or **two squares** if both are empty and the pawn **has not moved yet** or **has just been promoted** into a rare pawn (see 4.2);
 - it captures one square **diagonally forward** (white on c3 captures on d2 or d4; black on f6 captures on e5 or g5);
-- **en passant**: a pawn that has just moved two squares can be captured on the square it skipped, by any enemy pawn that attacks that square, on the very next move only;
+- **en passant**: a pawn that has just moved two squares can be captured on the square it skipped, by any enemy pawn that attacks that square, on the very next move only. Pawns of the two sides move perpendicular to each other, so en passant is checked against the capture squares of each enemy pawn, whatever its direction (e.g. white c3 → e3 can be taken on d3 by a black pawn on c4 or e4);
 - on reaching its promotion line, it is promoted (see 4).
-
-- **To confirm:** the "starting square" of a pawn is its square in the initial position (any pawn that has not moved yet can move two squares)?
-- **To confirm:** en passant also applies between perpendicular pawns (e.g. white c3 → e3 can be taken en passant on d3 by a black pawn on c4 or e4)?
 
 ## 3. Castling
 Castling **swaps the king and a rook**: each takes the other's square.
@@ -71,6 +68,8 @@ In the start position, white can castle with a3 once a2 is empty, and with c1 on
 
 ## 4. Promotion and rare pawns
 
+The promoted piece is called a **rare pawn** (or **promoted pawn**). Earlier notes also called it "hyperpawn": it is the same thing, and that name is dropped.
+
 ### 4.1 Promotion
 A pawn reaching its promotion line is **always promoted into a rare pawn**, and only into a rare pawn. There is no choice to make (no promotion picker).
 
@@ -84,19 +83,14 @@ A rare pawn is a pawn that has **turned 90°**:
 
 A rare pawn follows all pawn rules in its new direction, and its promotion square counts as a **starting square**:
 
-- on its first move as a rare pawn, it can move one or two squares;
+- on its first move after promotion, it can move one or two squares;
 - if it moves two squares, it can be captured en passant;
 - it captures diagonally forward in its new direction (a white rare pawn on h3 captures on g4; a black rare pawn on c1 captures on b2).
 
 ### 4.3 Winning with a rare pawn
 A rare pawn reaching its goal (rank 8 for white, the a-file for black) **wins the game immediately**.
 
-- **To confirm:** a white pawn promoted on **h8** (or a black pawn on **a1**) is already on its rare pawn goal. Immediate win, or does it need to move first (it can't)?
-
-### 4.4 Hyperpawns
-The first rule summary mentioned "hyperpawns" (1 or 2 squares per move; a hyperpawn reaching the end wins; a rare pawn can become one). The rare pawn described above now covers the 2-square move and the win.
-
-- **To confirm:** are hyperpawns gone (merged into the rare pawn), or still a separate thing?
+A pawn promoted on a corner that is already on its rare pawn goal (white on **h8**, black on **a1**) **wins immediately** too. The start position avoids it, but the rule covers any other preset.
 
 ## 5. Game endings
 
@@ -115,4 +109,4 @@ Unless stated otherwise, the other endings stay classic: checkmate wins; stalema
 - The engine's pawn block takes a **direction per pawn** (not per side): a rare pawn has a different direction from the other pawns of its side.
 - State tracks, for each pawn: its kind (pawn or rare pawn) and whether it is still on a starting square. Plus the en passant square and the position history (for the repetition rule).
 - The start position comes from a preset, which is also useful for other modes.
-- UI needs: a visual distinction for rare pawns, and something that makes each pawn's direction readable at a glance (it is unusual). No promotion picker.
+- UI needs: a **visual gimmick for rare pawns**, characteristic of this mode, and something that makes each pawn's direction readable at a glance (it is unusual). No promotion picker.
