@@ -1,7 +1,7 @@
 // Builds a whole `GameMode` from a `ChessRules`.
 
 import { toSquare, type BoardView, type GameMode } from "../core";
-import { checkedRoyals, findMove, makeMove, settle, setup } from "./engine";
+import { checkedRoyals, findMove, legalMoves, makeMove, settle, setup } from "./engine";
 import type { ChessAction, ChessRules, ChessState } from "./types";
 
 /** Display text (UI, in French) of the reasons used by the standard ending rules. A mode adds its own with spread. */
@@ -36,11 +36,20 @@ export function createChessMode(
         if (piece)
           pieces[toSquare(sq)] = { color: piece.color, kind: piece.type, ...(piece.dir && { dir: piece.dir }) };
       });
+      const moves: BoardView["moves"] = {};
+      if (toPlay(state)) {
+        for (const move of legalMoves(rules, state)) {
+          const targets = (moves[toSquare(move.from)] ??= []);
+          // Promotions give several moves to the same square.
+          if (!targets.includes(toSquare(move.to))) targets.push(toSquare(move.to));
+        }
+      }
       return {
         pieces,
         turn: toPlay(state),
         lastMove: state.lastMove,
         check: checkedRoyals(rules, state.board, state.turn).map(toSquare),
+        moves,
       };
     },
   };
