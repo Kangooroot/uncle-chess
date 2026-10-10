@@ -1,6 +1,6 @@
 # Engine architecture
 
-> **Status: proposal** (2026-10-09), to review before implementation. See [`history/2026-10-09-chess-engine-design.md`](../history/2026-10-09-chess-engine-design.md).
+> **Status: implemented for classic chess** (PR 1, `refactor/chess-engine`). Tourcoing comes next (PR 2). See [`history/2026-10-09-chess-engine-design.md`](../history/2026-10-09-chess-engine-design.md) and [`history/2026-10-09-chess-engine-implementation.md`](../history/2026-10-09-chess-engine-implementation.md).
 
 How game modes are built: a mode-agnostic **core**, a reusable **chess family** layer, and the **modes** on top. This replaces the single `src/engine/` target of [`GAME-MODES.md`](GAME-MODES.md) and the current `src/rules/` (chess.js).
 
@@ -32,6 +32,7 @@ Rules:
 ```ts
 type Color = "w" | "b";
 type Square = string;                      // "a1" … "h8"
+type Dir = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
 type Seat = Color | "both" | "spectator";  // "both": solo play, development only
 
 type Status =
@@ -66,7 +67,7 @@ type ViewPiece = {
 };
 ```
 
-Board geometry: `Dir = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw"`, with helpers to convert squares ⇄ coordinates, step in a direction, and test whether a square is on the board. Internally, a square is an index `0…63` (`rank * 8 + file`, `a1 = 0`); square names are used at the API boundary.
+Board geometry (`src/core/board.ts`): helpers to convert squares ⇄ coordinates, step in a direction, and test whether a square is on the board. Internally, a square is an index `0…63` (`rank * 8 + file`, `a1 = 0`); square names are used at the API boundary.
 
 Changes to the contract of [`GAME-MODES.md`](GAME-MODES.md): `Status` gets a generic `reason` (modes add their own win and draw reasons), `reasons` gives their display text, and `view` takes a `Seat` (solo play adds `"both"`).
 
@@ -89,7 +90,7 @@ type ChessState = {
   turn: Color;
   enPassant: { target: Square; pawn: Square } | null;  // skipped square, and the pawn to capture
   halfmoves: number;         // since the last capture or pawn move (fifty-move rule)
-  history: string[];         // position keys since the last irreversible move (repetition)
+  history: string[];         // position keys since the last irreversible move, current one included (repetition)
   lastMove: { from: Square; to: Square } | null;
   status: Status;            // computed once per move by the ending rules
 };
@@ -103,7 +104,7 @@ Design choices:
 - **Each pawn carries its direction** (`dir`). The classic preset gives `n` to white pawns and `s` to black pawns; Tourcoing gives `e` and `s`. Pawn rules (one or two steps, diagonal captures, en passant, promotion on the board edge) are written once, relative to `dir`.
 - **En passant stores both squares**: with perpendicular pawns, the captured pawn is not always "behind" the target square.
 - **The status is stored**, computed by the ending rules right after each move. Some endings depend on the move just played (repetition: who produced the third occurrence).
-- **Position key** (repetition): every piece with all its fields, the side to move and the en passant target. `history` is cleared after a capture or a pawn move, since no earlier position can come back.
+- **Position key** (repetition): every piece's type, colour and direction, the side to move, the castling rights (`CastlingRule.rights`), and the en passant target only when a legal move can take it. `moved` is left out on purpose: with it, a knight going back and forth would never repeat the start position. `history` is cleared after a capture or a pawn move (a piece with a `dir`), since no earlier position can come back.
 
 ### 3.2 Rules: the extension points
 
@@ -116,27 +117,30 @@ interface ChessRules {
   endings: EndingRule[];               // checked in order after each move; the first match wins
 }
 
+// Inside src/chess/, squares are indices 0…63.
 interface PieceKind {
-  royal?: boolean;                                // must not be left in check (the king)
-  moves(board: Board, from: Square): ChessMove[]; // pseudo-legal moves, captures included
-  attacks(board: Board, from: Square): Square[];  // squares it attacks (check, castling)
+  royal?: boolean;                                     // must not be left in check (the king)
+  moves(state: ChessState, from: number): ChessMove[]; // pseudo-legal moves, captures included (state: en passant)
+  attacks(board: Board, from: number): number[];       // squares it attacks (check, castling)
 }
 
 interface PromotionRule {
   // Pieces a moving piece can turn into on `to`, the first one being the default. null = no promotion.
-  options(piece: Piece, to: Square): Piece[] | null;
+  options(piece: Piece, to: number): Piece[] | null;
 }
 
 interface CastlingRule {
-  moves(state: ChessState, king: Square): ChessMove[];  // castling moves available to that king
+  rights(board: Board, king: number): number[];  // partners that king can still castle with some day (position key)
+  moves(state: ChessState, king: number, attacked: (square: number, by: Color) => boolean): ChessMove[];
 }
 
-type EndingRule = (state: ChessState, game: ChessContext) => Status | null;
+type EndingContext = { legalMoves: ChessMove[]; inCheck: boolean };  // of the side to move
+type EndingRule = (state: ChessState, context: EndingContext) => Status | null;
 
 type Preset = { placement: string; pawnDirs: Record<Color, Dir>; turn: Color };  // FEN-like placement
 ```
 
-`ChessMove` is the internal, richer form of a move: `from`, `to`, the captured square (en passant), the rook move (castling), the en passant target it creates, the promoted piece. `ChessContext` gives ending rules the helpers they need (legal moves of the side to move, is a side in check, the previous history).
+`ChessMove` is the internal, richer form of a move: `from`, `to`, the captured square (en passant), the rook move (castling), the en passant target it creates, the promoted piece. `EndingContext` gives ending rules what they need besides the state (which holds the history).
 
 Building blocks provided by `src/chess/`, and what `classicRules` uses:
 
@@ -144,7 +148,7 @@ Building blocks provided by `src/chess/`, and what `classicRules` uses:
 |---|---|---|
 | `setup` | FEN placement parser, pawn directions | standard position, pawns `n` / `s` |
 | `pieces` | `slider(dirs)`, `leaper(offsets)`, `king`, `pawn` | k, q, r, b, n, p |
-| `castling` | `standardCastling` (king two squares, rook jumps over), `swapCastling` (king ↔ rook) | `standardCastling` |
+| `castling` | `standardCastling` (king two squares, rook jumps over); `swapCastling` (king ↔ rook) comes with Tourcoing | `standardCastling` |
 | `promotion` | `promoteTo(types)`, on the edge of the pawn's direction | queen (default), rook, bishop, knight |
 | `endings` | `checkmate`, `stalemate`, `repetition(outcome)`, `fiftyMoves`, `insufficientMaterial` | all, repetition = draw |
 
@@ -160,7 +164,9 @@ Building blocks provided by `src/chess/`, and what `classicRules` uses:
 function createChessMode(meta: { id: string; name: string; description: string }, rules: ChessRules): GameMode<ChessState, ChessAction>;
 ```
 
-Builds the whole `GameMode` from the rules, including `view` (pieces, check highlight, last move) and the display text of the standard reasons. A mode adds the text of its own reasons, and can still wrap a function of the result for a need no extension point covers.
+Builds the whole `GameMode` from the rules, including `view` (pieces, check highlight, last move) and the display text of the standard reasons (`STANDARD_REASONS`). A mode adds the text of its own reasons with spread (`{ ...mode, reasons: { ...STANDARD_REASONS, ... } }`), and can still wrap a function of the result for a need no extension point covers.
+
+Files: `types.ts` (state and extension points), `engine.ts` (generic algorithm), `pieces.ts`, `castling.ts`, `promotion.ts`, `endings.ts` (building blocks), `classic.ts` (`classicRules`), `mode.ts` (`createChessMode`).
 
 ## 4. Protocol, server, client
 
@@ -180,7 +186,7 @@ type ClientMessage = { type: "action"; action: unknown };
 - **`src/chess/`, against chess.js** (dev dependency only), with `classicRules`:
   - perft (number of move sequences at depth N) from the start position and from the standard tricky positions (castling, en passant, promotion, pins), compared with chess.js's `perft`;
   - random games: at every position, same legal moves and same status as chess.js.
-- **Each building block** with small targeted positions: perpendicular pawns, en passant between them, swap castling, `repetition("loses")`.
+- **Each building block** with small targeted positions: perpendicular pawns, en passant between them, `repetition("loses")` (swap castling with Tourcoing).
 - **Each mode** has a test file following its spec (`specs/modes/<id>.md`).
 
 ## 6. Delivery

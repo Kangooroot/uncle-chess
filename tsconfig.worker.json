@@ -4,5 +4,5 @@
     "lib": ["ES2022"],
     "types": ["vite/client"]
   },
-  "include": ["src/server", "src/rules", "src/protocol.ts", "worker-configuration.d.ts"]
+  "include": ["src/server", "src/core", "src/chess", "src/modes", "src/protocol.ts", "worker-configuration.d.ts"]
 }

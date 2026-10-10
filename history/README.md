@@ -20,3 +20,4 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-09-lint-and-format](2026-10-09-lint-and-format.md) | Oxlint (not ESLint: TypeScript 7) and Prettier | |
 | [2026-10-09-chess-engine-design](2026-10-09-chess-engine-design.md) | Engine architecture: core / chess / modes, `ChessRules`, JSON state | |
 | [2026-10-09-lean-claude-context](2026-10-09-lean-claude-context.md) | Lighter `CLAUDE.md`: specs read on demand, this index | |
+| [2026-10-09-chess-engine-implementation](2026-10-09-chess-engine-implementation.md) | Classic chess on the new engine (PR 1); position key and other deviations from the proposal | |

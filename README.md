@@ -30,7 +30,7 @@ After changing `wrangler.jsonc`, regenerate the types: `yarn cf-types`.
 
 ## Layout
 
-- `src/rules/`: rules engine and game modes (shared by client and server)
+- `src/core/`, `src/chess/`, `src/modes/`: rules engine and game modes (shared by client and server), see `specs/ENGINE.md`
 - `src/server/`: Cloudflare Worker and game room (Durable Object)
 - `src/client/`: React app
 - `src/protocol.ts`: WebSocket messages

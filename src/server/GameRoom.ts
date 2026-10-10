@@ -1,13 +1,18 @@
-// One room = one game. The server is authoritative: it validates every move
-// with the rules engine before broadcasting the new state.
+// One room = one game. The server is authoritative: it validates every action
+// with the game mode before broadcasting the new state.
 
 import { Server, type Connection, type ConnectionContext } from "partyserver";
-import type { ClientMessage, GameState, Seat, ServerMessage } from "../protocol";
-import { defaultVariant, variants, type Color, type Move } from "../rules";
+import type { Color, Seat } from "../core";
+import { defaultMode, modes } from "../modes";
+import type { ClientMessage, GameState, ServerMessage } from "../protocol";
+
+// Rooms stored with an older format start a new game (no migration).
+const VERSION = 2;
 
 type Stored = {
-  variant: string;
-  moves: Move[];
+  version: typeof VERSION;
+  mode: string;
+  state: unknown;
   tokens: Record<Color, string | null>; // each player's secret token, to get their side back
   names: Record<Color, string | null>;
 };
@@ -18,15 +23,16 @@ const COLORS: Color[] = ["w", "b"];
 
 export class GameRoom extends Server<Env> {
   game: Stored = {
-    variant: defaultVariant.id,
-    moves: [],
+    version: VERSION,
+    mode: defaultMode.id,
+    state: defaultMode.setup(),
     tokens: { w: null, b: null },
     names: { w: null, b: null },
   };
 
   async onStart() {
     const stored = await this.ctx.storage.get<Stored>("game");
-    if (stored) this.game = stored;
+    if (stored?.version === VERSION && stored.mode in modes) this.game = stored;
   }
 
   async onConnect(conn: Connection<ConnState>, { request }: ConnectionContext) {
@@ -49,19 +55,19 @@ export class GameRoom extends Server<Env> {
     } catch {
       return;
     }
-    if (msg.type !== "move") return;
+    if (msg?.type !== "action") return;
 
-    const variant = variants[this.game.variant];
-    const position = variant.position(this.game.moves);
+    const mode = modes[this.game.mode];
+    const player = mode.toPlay(this.game.state);
+    if (!player) return send(conn, { type: "error", message: "The game is over." });
     const seat = conn.state?.seat;
-    if (seat !== position.turn && seat !== "both") {
+    if (seat !== player && seat !== "both") {
       return send(conn, { type: "error", message: "It's not your turn." });
     }
-    if (!variant.play(this.game.moves, msg.move)) {
-      return send(conn, { type: "error", message: "Illegal move." });
-    }
+    const next = mode.play(this.game.state, msg.action, player);
+    if (!next) return send(conn, { type: "error", message: "Illegal move." });
 
-    this.game.moves.push(msg.move);
+    this.game.state = next;
     await this.save();
     this.broadcastState();
   }
@@ -88,12 +94,7 @@ export class GameRoom extends Server<Env> {
   }
 
   broadcastState() {
-    const state: GameState = {
-      variant: this.game.variant,
-      moves: this.game.moves,
-      position: variants[this.game.variant].position(this.game.moves),
-      players: this.game.names,
-    };
+    const state: GameState = { mode: this.game.mode, state: this.game.state, players: this.game.names };
     this.broadcast(JSON.stringify({ type: "state", state } satisfies ServerMessage));
   }
 }
