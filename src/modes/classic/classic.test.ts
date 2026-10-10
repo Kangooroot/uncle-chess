@@ -24,6 +24,14 @@ describe("classic", () => {
     expect(classic.status(state)).toEqual({ kind: "playing" });
   });
 
+  it("lists the legal destinations of each piece of the side to move", () => {
+    const { moves } = classic.view(classic.setup(), "w");
+    expect(Object.keys(moves)).toHaveLength(10); // 8 pawns, 2 knights
+    expect(moves.e2).toEqual(["e3", "e4"]);
+    expect(new Set(moves.g1)).toEqual(new Set(["f3", "h3"]));
+    expect(moves.e7).toBeUndefined();
+  });
+
   it("accepts a legal move and rejects an illegal one", () => {
     const state = classic.setup();
     expect(classic.toPlay(classic.play(state, { from: "e2", to: "e4" }, "w")!)).toBe("b");
@@ -36,6 +44,7 @@ describe("classic", () => {
     expect(classic.status(state)).toEqual({ kind: "win", winner: "w", reason: "checkmate" });
     expect(classic.toPlay(state)).toBeNull();
     expect(classic.view(state, "spectator").check).toEqual(["e8"]);
+    expect(classic.view(state, "spectator").moves).toEqual({});
     expect(classic.play(state, { from: "a7", to: "a6" }, "b")).toBeNull();
   });
 
@@ -52,6 +61,7 @@ describe("classic", () => {
     expect(classic.view(play(`${moves} g7h8`)!, "w").pieces.h8).toEqual({ color: "w", kind: "q" });
     expect(classic.view(play(`${moves} g7h8n`)!, "w").pieces.h8).toEqual({ color: "w", kind: "n" });
     expect(play(`${moves} g7h8k`)).toBeNull();
+    expect(classic.view(play(moves)!, "w").moves.g7).toEqual(["h8"]); // four promotions, one square
   });
 
   it("castles", () => {

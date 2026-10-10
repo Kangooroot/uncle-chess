@@ -17,6 +17,7 @@ Decided on 2026-10-07, UI and pull requests switched to French on 2026-10-09 (se
 - [`STACK.md`](STACK.md): tech stack, architecture principles, commands.
 - [`GAME-MODES.md`](GAME-MODES.md): game modes, reusable building blocks, game mode contract.
 - [`ENGINE.md`](ENGINE.md): engine architecture (core, chess family, modes) and migration plan.
+- [`UI.md`](UI.md): screens and board interactions.
 - [`WORKFLOW.md`](WORKFLOW.md): branches and pull requests.
 - [`COMMITS.md`](COMMITS.md): commit convention (gitmoji + Conventional Commits), used by `/commit`.
 - `modes/<id>.md`: rules of each game mode.
