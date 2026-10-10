@@ -1,14 +1,17 @@
-import { useState, type CSSProperties } from "react";
+import { useState, type CSSProperties, type ReactElement } from "react";
 import {
   Chessboard,
+  defaultPieces,
   type PieceDropHandlerArgs,
   type PieceHandlerArgs,
+  type PieceRenderObject,
   type PositionDataType,
   type SquareHandlerArgs,
 } from "react-chessboard";
 import { usePartySocket } from "partysocket/react";
-import type { BoardView, Color, GameMode, Seat, Square } from "../core";
+import type { BoardView, Color, GameMode, Seat, Square, ViewPiece } from "../core";
 import { modes } from "../modes";
+import { modeUIs } from "../modes/ui";
 import type { ClientMessage, GameState, ServerMessage } from "../protocol";
 import { getToken } from "./identity";
 
@@ -25,7 +28,8 @@ export function Game({ id, name }: { id: string; name: string }) {
   const socket = usePartySocket({
     party: "game-room",
     room: id,
-    query: { token: getToken(), name, ...(soloRequested() ? { solo: "" } : {}) },
+    // `mode` only matters to a new room: it picks the game mode.
+    query: { token: getToken(), name, ...requestedMode(), ...(soloRequested() ? { solo: "" } : {}) },
     onMessage(event) {
       const msg: ServerMessage = JSON.parse(event.data);
       if (msg.type === "welcome") setSeat(msg.seat);
@@ -49,6 +53,7 @@ export function Game({ id, name }: { id: string; name: string }) {
   const view = mode.view(current, seat);
   const player = mode.toPlay(current);
   const myTurn = player !== null && (seat === player || seat === "both");
+  const flipped = seat === "b";
 
   const targets = (myTurn && selected && view.moves[selected]) || [];
 
@@ -92,7 +97,7 @@ export function Game({ id, name }: { id: string; name: string }) {
     <main className="game">
       <header>
         <span>
-          ⬜ {state.players.w ?? "en attente…"} — ⬛ {state.players.b ?? "en attente…"}
+          <strong>{mode.name}</strong> · ⬜ {state.players.w ?? "en attente…"} — ⬛ {state.players.b ?? "en attente…"}
         </span>
         <button onClick={copyLink}>{copied ? "Lien copié !" : "Copier le lien"}</button>
       </header>
@@ -102,7 +107,8 @@ export function Game({ id, name }: { id: string; name: string }) {
           options={{
             id: "game",
             position: toPosition(view),
-            boardOrientation: seat === "b" ? "black" : "white",
+            pieces: pieceRenderers(view, state.mode, flipped),
+            boardOrientation: flipped ? "black" : "white",
             allowDragging: myTurn,
             canDragPiece: ({ piece }) => piece.pieceType[0] === view.turn,
             squareStyles: squareStyles(view, selected, targets),
@@ -140,13 +146,39 @@ function squareStyles(view: BoardView, selected: Square | null, targets: Square[
   return styles;
 }
 
-/** react-chessboard position: piece codes like "wK" ("w" + the kind in uppercase). */
+/** react-chessboard piece type: colour first (see `canDragPiece`), then kind and direction, e.g. "wp-n". */
+function pieceType(piece: ViewPiece): string {
+  return piece.color + piece.kind + (piece.dir ? `-${piece.dir}` : "");
+}
+
 function toPosition(view: BoardView): PositionDataType {
   const position: PositionDataType = {};
   for (const [square, piece] of Object.entries(view.pieces)) {
-    if (piece) position[square] = { pieceType: piece.color + piece.kind.toUpperCase() };
+    if (piece) position[square] = { pieceType: pieceType(piece) };
   }
   return position;
+}
+
+// Kept across renders: react-chessboard uses them as components, a new
+// function would remount every piece.
+const renderers = new Map<string, () => ReactElement>();
+
+/** Draws each piece type of the view: the mode's own drawing, or react-chessboard's classic pieces. */
+function pieceRenderers(view: BoardView, mode: string, flipped: boolean): PieceRenderObject {
+  const result: PieceRenderObject = {};
+  for (const piece of Object.values(view.pieces)) {
+    if (!piece) continue;
+    const type = pieceType(piece);
+    const key = `${mode} ${flipped} ${type}`;
+    let render = renderers.get(key);
+    if (!render) {
+      const fallback = defaultPieces[piece.color + piece.kind.toUpperCase()];
+      render = () => modeUIs[mode]?.renderPiece(piece, flipped) ?? fallback?.() ?? <span>{piece.kind}</span>;
+      renderers.set(key, render);
+    }
+    result[type] = render;
+  }
+  return result;
 }
 
 function colorName(color: Color): string {
@@ -167,6 +199,11 @@ function statusText(mode: GameMode<unknown, unknown>, state: unknown, view: Boar
   if (seat === "spectator") return `${check}Vous regardez la partie (${toMove}).`;
   if (seat === "both") return `${check}Partie solo : ${toMove}.`;
   return check + (seat === turn ? "À vous de jouer." : "À l'adversaire de jouer.");
+}
+
+function requestedMode(): { mode?: string } {
+  const mode = new URLSearchParams(location.search).get("mode");
+  return mode ? { mode } : {};
 }
 
 function soloRequested(): boolean {

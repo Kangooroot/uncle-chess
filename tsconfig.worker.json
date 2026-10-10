@@ -4,5 +4,7 @@
     "lib": ["ES2022"],
     "types": ["vite/client"]
   },
-  "include": ["src/server", "src/core", "src/chess", "src/modes", "src/protocol.ts", "worker-configuration.d.ts"]
+  "include": ["src/server", "src/core", "src/chess", "src/modes", "src/protocol.ts", "worker-configuration.d.ts"],
+  // Client-only drawing of the modes (React).
+  "exclude": ["src/modes/ui.ts", "src/modes/*/ui.tsx"]
 }
