@@ -1,18 +1,23 @@
 // Castling building blocks.
 
-import { fileOf, opponent, rankOf } from "../core";
+import { fileOf, offset, opponent, rankOf } from "../core";
 import type { Board, CastlingRule, ChessMove } from "./types";
 
-/** Unmoved rooks ("r") of the king's side on its rank, if the king has not moved. */
-function unmovedRooks(board: Board, king: number): number[] {
+/**
+ * Unmoved rooks ("r") of the king's side on its rank (and on its file if
+ * `files`), if the king has not moved.
+ */
+function unmovedRooks(board: Board, king: number, files = false): number[] {
   const piece = board[king];
   if (!piece || piece.moved) return [];
-  const rooks: number[] = [];
-  for (let sq = rankOf(king) * 8; sq < rankOf(king) * 8 + 8; sq++) {
-    const rook = board[sq];
-    if (rook?.type === "r" && rook.color === piece.color && !rook.moved) rooks.push(sq);
-  }
-  return rooks;
+  return board.flatMap((rook, sq) =>
+    rook?.type === "r" &&
+    rook.color === piece.color &&
+    !rook.moved &&
+    (rankOf(sq) === rankOf(king) || (files && fileOf(sq) === fileOf(king)))
+      ? [sq]
+      : [],
+  );
 }
 
 /**
@@ -21,7 +26,7 @@ function unmovedRooks(board: Board, king: number): number[] {
  * the king must not be in check nor pass through an attacked square.
  */
 export const standardCastling: CastlingRule = {
-  rights: unmovedRooks,
+  rights: (board, king) => unmovedRooks(board, king),
   moves(state, king, attacked) {
     const { board, turn } = state;
     if (attacked(king, opponent(turn))) return [];
@@ -41,5 +46,27 @@ export const standardCastling: CastlingRule = {
       if (clear && !attacked(rookTo, opponent(turn))) moves.push({ from: king, to, rook: { from: rook, to: rookTo } });
     }
     return moves;
+  },
+};
+
+/**
+ * Swap castling: the king and an unmoved rook of its rank or file swap
+ * squares. Every square between them must be empty, and the king must not be
+ * in check nor pass through an attacked square.
+ */
+export const swapCastling: CastlingRule = {
+  rights: (board, king) => unmovedRooks(board, king, true),
+  moves(state, king, attacked) {
+    const { board, turn } = state;
+    if (attacked(king, opponent(turn))) return [];
+    return unmovedRooks(board, king, true).flatMap((rook) => {
+      const df = Math.sign(fileOf(rook) - fileOf(king));
+      const dr = Math.sign(rankOf(rook) - rankOf(king));
+      for (let sq = offset(king, df, dr)!; sq !== rook; sq = offset(sq, df, dr)!) {
+        if (board[sq] || attacked(sq, opponent(turn))) return [];
+      }
+      // The king's arrival square is checked by the generic legality filter.
+      return [{ from: king, to: rook, rook: { from: rook, to: king } }];
+    });
   },
 };
