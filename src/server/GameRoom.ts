@@ -3,7 +3,7 @@
 
 import { Server, type Connection, type ConnectionContext } from "partyserver";
 import type { Color, Seat } from "../core";
-import { defaultMode, modes } from "../modes";
+import { defaultMode, findMode, modes } from "../modes";
 import type { ClientMessage, GameState, ServerMessage } from "../protocol";
 
 // Rooms stored with an older format start a new game (no migration).
@@ -22,17 +22,16 @@ type ConnState = { seat: Seat };
 const COLORS: Color[] = ["w", "b"];
 
 export class GameRoom extends Server<Env> {
-  game: Stored = {
-    version: VERSION,
-    mode: defaultMode.id,
-    state: defaultMode.setup(),
-    tokens: { w: null, b: null },
-    names: { w: null, b: null },
-  };
+  game: Stored = newGame(defaultMode.id);
+  // False until the first connection, which picks the mode of a new room.
+  created = false;
 
   async onStart() {
     const stored = await this.ctx.storage.get<Stored>("game");
-    if (stored?.version === VERSION && stored.mode in modes) this.game = stored;
+    if (stored?.version === VERSION && findMode(stored.mode)) {
+      this.game = stored;
+      this.created = true;
+    }
   }
 
   async onConnect(conn: Connection<ConnState>, { request }: ConnectionContext) {
@@ -41,6 +40,13 @@ export class GameRoom extends Server<Env> {
     const name = (params.get("name") ?? "").trim().slice(0, 30) || "Anonyme";
     // Solo play (one player holds both sides) is only allowed in development.
     const solo = import.meta.env.DEV && params.has("solo");
+
+    // The mode is fixed when the room is created: later connections can't change it.
+    if (!this.created) {
+      this.created = true;
+      this.game = newGame((findMode(params.get("mode")) ?? defaultMode).id);
+      await this.save();
+    }
 
     const seat = await this.takeSeat(token, name, solo);
     conn.setState({ seat });
@@ -97,6 +103,16 @@ export class GameRoom extends Server<Env> {
     const state: GameState = { mode: this.game.mode, state: this.game.state, players: this.game.names };
     this.broadcast(JSON.stringify({ type: "state", state } satisfies ServerMessage));
   }
+}
+
+function newGame(mode: string): Stored {
+  return {
+    version: VERSION,
+    mode,
+    state: modes[mode].setup(),
+    tokens: { w: null, b: null },
+    names: { w: null, b: null },
+  };
 }
 
 function send(conn: Connection, msg: ServerMessage) {
