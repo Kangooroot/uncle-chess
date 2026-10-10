@@ -14,6 +14,7 @@ Read a spec only when the task touches its topic:
 | `specs/STACK.md` | touching dependencies, config, server, deployment, or running unusual commands |
 | `specs/GAME-MODES.md` | working on game modes, the `GameMode` contract, or the protocol |
 | `specs/ENGINE.md` | working on `src/core/`, `src/chess/`, `src/modes/`, or the engine migration |
+| `specs/UI.md` | working on the client: screens, board interactions |
 | `specs/modes/<id>.md` | working on that game mode |
 | `specs/COMMITS.md` | any commit |
 | `history/README.md` | any topic: index of past decisions, then open only the relevant files |
@@ -22,4 +23,4 @@ Read a spec only when the task touches its topic:
 
 - Yarn 4 only, never npm or npx (`yarn <script>`, `yarn dlx <pkg>`).
 - Before pushing: `yarn typecheck`, `yarn lint`, `yarn format:check`, `yarn test`.
-- Talk to the user in French, but write all code, comments, docs, specs, history files and commits in English.
+- Talk to the user in French, but write all code, comments, docs, specs, history files and commits in English. Exceptions in French: UI text, and pull request titles and descriptions.

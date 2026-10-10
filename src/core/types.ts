@@ -24,6 +24,7 @@ export type BoardView = {
   turn: Color | null;
   lastMove: { from: Square; to: Square } | null;
   check: Square[]; // royal pieces in check
+  moves: Partial<Record<Square, Square[]>>; // legal destinations of each piece of the side to move (move hints)
 };
 
 export interface GameMode<State, Action> {

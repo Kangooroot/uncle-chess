@@ -9,7 +9,7 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-07-switch-to-yarn](2026-10-07-switch-to-yarn.md) | Yarn 4 instead of npm, `node-modules` linker | |
 | [2026-10-07-vitest-5-upgrade](2026-10-07-vitest-5-upgrade.md) | Vitest 5 for Vite 8, separate `vitest.config.ts` | |
 | [2026-10-07-commit-convention](2026-10-07-commit-convention.md) | Gitmoji + Conventional Commits, `/commit` command | |
-| [2026-10-07-english-only](2026-10-07-english-only.md) | Everything written in English, conversations in French | |
+| [2026-10-07-english-only](2026-10-07-english-only.md) | Everything written in English, conversations in French | french-ui (UI, PRs) |
 | [2026-10-07-game-modes](2026-10-07-game-modes.md) | Platform of game modes, building blocks, `GameMode` contract | chess-engine-design (layout) |
 | [2026-10-08-branch-workflow](2026-10-08-branch-workflow.md) | One branch and one PR per topic, big-PR warning | |
 | [2026-10-08-ci-and-deploy](2026-10-08-ci-and-deploy.md) | CI on PRs, deploy to Cloudflare on merge to `main` | |
@@ -21,3 +21,5 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-09-chess-engine-design](2026-10-09-chess-engine-design.md) | Engine architecture: core / chess / modes, `ChessRules`, JSON state | |
 | [2026-10-09-lean-claude-context](2026-10-09-lean-claude-context.md) | Lighter `CLAUDE.md`: specs read on demand, this index | |
 | [2026-10-09-chess-engine-implementation](2026-10-09-chess-engine-implementation.md) | Classic chess on the new engine (PR 1); position key and other deviations from the proposal | |
+| [2026-10-09-french-ui](2026-10-09-french-ui.md) | UI text and pull request descriptions in French, hard-coded for now | |
+| [2026-10-09-move-hints](2026-10-09-move-hints.md) | Move hints, click-to-move, red king square in check; `BoardView.moves` | |

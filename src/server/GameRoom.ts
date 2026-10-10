@@ -38,7 +38,7 @@ export class GameRoom extends Server<Env> {
   async onConnect(conn: Connection<ConnState>, { request }: ConnectionContext) {
     const params = new URL(request.url).searchParams;
     const token = params.get("token") ?? "";
-    const name = (params.get("name") ?? "").trim().slice(0, 30) || "Anonymous";
+    const name = (params.get("name") ?? "").trim().slice(0, 30) || "Anonyme";
     // Solo play (one player holds both sides) is only allowed in development.
     const solo = import.meta.env.DEV && params.has("solo");
 
@@ -59,13 +59,13 @@ export class GameRoom extends Server<Env> {
 
     const mode = modes[this.game.mode];
     const player = mode.toPlay(this.game.state);
-    if (!player) return send(conn, { type: "error", message: "The game is over." });
+    if (!player) return send(conn, { type: "error", message: "La partie est terminée." });
     const seat = conn.state?.seat;
     if (seat !== player && seat !== "both") {
-      return send(conn, { type: "error", message: "It's not your turn." });
+      return send(conn, { type: "error", message: "Ce n'est pas votre tour." });
     }
     const next = mode.play(this.game.state, msg.action, player);
-    if (!next) return send(conn, { type: "error", message: "Illegal move." });
+    if (!next) return send(conn, { type: "error", message: "Coup illégal." });
 
     this.game.state = next;
     await this.save();

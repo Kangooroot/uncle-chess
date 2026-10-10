@@ -12,7 +12,7 @@ Decided on 2026-10-08 (see [`history/2026-10-08-branch-workflow.md`](../history/
 
 - Claude opens **one pull request per branch**, targeting `main`, as soon as the topic is pushed.
 - Before pushing: `yarn typecheck` and `yarn test` must pass locally. CI runs them again on the pull request.
-- Description: what changed and why, how it was checked, anything left open.
+- Title and description **in French** (see [`MAIN.md`](MAIN.md)). Description: what changed and why, how it was checked, anything left open, and what to review.
 
 ## Big pull requests
 

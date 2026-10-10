@@ -58,6 +58,7 @@ type BoardView = {
   turn: Color | null;
   lastMove: { from: Square; to: Square } | null;
   check: Square[];                 // royal pieces in check, highlighted by the UI
+  moves: Partial<Record<Square, Square[]>>;  // legal destinations of each piece of the side to move (move hints)
 };
 
 type ViewPiece = {
@@ -164,7 +165,7 @@ Building blocks provided by `src/chess/`, and what `classicRules` uses:
 function createChessMode(meta: { id: string; name: string; description: string }, rules: ChessRules): GameMode<ChessState, ChessAction>;
 ```
 
-Builds the whole `GameMode` from the rules, including `view` (pieces, check highlight, last move) and the display text of the standard reasons (`STANDARD_REASONS`). A mode adds the text of its own reasons with spread (`{ ...mode, reasons: { ...STANDARD_REASONS, ... } }`), and can still wrap a function of the result for a need no extension point covers.
+Builds the whole `GameMode` from the rules, including `view` (pieces, check highlight, last move, legal destinations) and the display text of the standard reasons (`STANDARD_REASONS`). A mode adds the text of its own reasons with spread (`{ ...mode, reasons: { ...STANDARD_REASONS, ... } }`), and can still wrap a function of the result for a need no extension point covers.
 
 Files: `types.ts` (state and extension points), `engine.ts` (generic algorithm), `pieces.ts`, `castling.ts`, `promotion.ts`, `endings.ts` (building blocks), `classic.ts` (`classicRules`), `mode.ts` (`createChessMode`).
 
