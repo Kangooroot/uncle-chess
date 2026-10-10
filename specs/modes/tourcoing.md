@@ -1,6 +1,6 @@
 # Tourcoing chess
 
-> **Status: validated** on 2026-10-09. Ready for implementation.
+> **Status: validated** on 2026-10-09, **implemented** on 2026-10-10 (`src/modes/tourcoing/`, see [`history/2026-10-10-tourcoing-implementation.md`](../../history/2026-10-10-tourcoing-implementation.md)).
 
 Mode id: `tourcoing`. First non-classic mode of the platform: a **close mode** (see [`../GAME-MODES.md`](../GAME-MODES.md)), i.e. classic chess with the changes below. Anything not mentioned here follows classic chess rules. White moves first.
 
@@ -110,3 +110,4 @@ Unless stated otherwise, the other endings stay classic: checkmate wins; stalema
 - State tracks, for each pawn: its kind (pawn or rare pawn) and whether it is still on a starting square. Plus the en passant square and the position history (for the repetition rule).
 - The start position comes from a preset, which is also useful for other modes.
 - UI needs: a **visual gimmick for rare pawns**, characteristic of this mode, and something that makes each pawn's direction readable at a glance (it is unusual). No promotion picker.
+- Implemented as: a small **arrow** on the edge of every pawn's square, pointing where it moves (turned with the board); rare pawns have a **pulsing gold halo** and a gold arrow. To castle, move the king onto the rook (drag or click).

@@ -1,6 +1,6 @@
 # Engine architecture
 
-> **Status: implemented for classic chess** (PR 1, `refactor/chess-engine`). Tourcoing comes next (PR 2). See [`history/2026-10-09-chess-engine-design.md`](../history/2026-10-09-chess-engine-design.md) and [`history/2026-10-09-chess-engine-implementation.md`](../history/2026-10-09-chess-engine-implementation.md).
+> **Status: implemented** for classic chess (PR 1, `refactor/chess-engine`) and Tourcoing (PR 2, `feat/tourcoing-mode`, see [`history/2026-10-10-tourcoing-implementation.md`](../history/2026-10-10-tourcoing-implementation.md)). See [`history/2026-10-09-chess-engine-design.md`](../history/2026-10-09-chess-engine-design.md) and [`history/2026-10-09-chess-engine-implementation.md`](../history/2026-10-09-chess-engine-implementation.md).
 
 How game modes are built: a mode-agnostic **core**, a reusable **chess family** layer, and the **modes** on top. This replaces the single `src/engine/` target of [`GAME-MODES.md`](GAME-MODES.md) and the current `src/rules/` (chess.js).
 
@@ -149,7 +149,7 @@ Building blocks provided by `src/chess/`, and what `classicRules` uses:
 |---|---|---|
 | `setup` | FEN placement parser, pawn directions | standard position, pawns `n` / `s` |
 | `pieces` | `slider(dirs)`, `leaper(offsets)`, `king`, `pawn` | k, q, r, b, n, p |
-| `castling` | `standardCastling` (king two squares, rook jumps over); `swapCastling` (king ↔ rook) comes with Tourcoing | `standardCastling` |
+| `castling` | `standardCastling` (king two squares, rook jumps over); `swapCastling` (king ↔ rook of its rank or file) | `standardCastling` |
 | `promotion` | `promoteTo(types)`, on the edge of the pawn's direction | queen (default), rook, bishop, knight |
 | `endings` | `checkmate`, `stalemate`, `repetition(outcome)`, `fiftyMoves`, `insufficientMaterial` | all, repetition = draw |
 
@@ -179,8 +179,8 @@ type ClientMessage = { type: "action"; action: unknown };
 - The server stores `{ version: 2, mode, state, tokens, names }` in the Durable Object and broadcasts the mode's state. Rooms with an older stored format start a new game (decision A).
 - The server and the protocol do not interpret `state` or `action`: they go through the mode (`play`, `toPlay`).
 - The client computes `view(state, seat)` itself, and runs `play` for the optimistic display. A hidden-information mode will later need the server to send views instead of the state (open point, not needed now).
-- The board UI renders a `BoardView`. It maps each `ViewPiece` to a react-chessboard piece; a mode can provide renderers for its own kinds (Tourcoing's rare pawn, pawn directions).
-- The mode is chosen when the game is created and fixed in the room (decision C, with Tourcoing). Until then every room is `classic`.
+- The board UI renders a `BoardView`. It maps each `ViewPiece` to a react-chessboard piece; a mode can draw pieces its own way with a `ModeUI` (`src/modes/<id>/ui.tsx`, registered in `src/modes/ui.ts`). These files are client-only: the Worker's `tsconfig` excludes them and never imports them.
+- The mode is chosen when the game is created and fixed in the room (decision C): the creator's URL carries `?mode=<id>`, and only the first connection to a new room uses it (unknown ids fall back to `classic`).
 
 ## 5. Tests
 
