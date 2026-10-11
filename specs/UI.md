@@ -1,6 +1,19 @@
 # User interface
 
-Two screens: home (nickname, game mode when creating, create or join a game) and game (mode name, board, players, status). UI text is in French (see [`MAIN.md`](MAIN.md)).
+Three screens: home, invite and game (mode name, board, players, status). UI text is in French (see [`MAIN.md`](MAIN.md)).
+
+## Home
+
+Decided on 2026-10-11 (see [`history/2026-10-11-home-screen.md`](../history/2026-10-11-home-screen.md)). Works on phones (one column) and desktops.
+
+- **Hero**: the title in a serif font and a one-line tagline, over a faint checkerboard background.
+- **Nickname**: asked once, then shown as "Vous jouez en tant que <pseudo>" with a "Changer" button. Without a nickname, the play buttons are disabled.
+- **Mode cards**: one card per mode of the registry, with a static preview of its start position (`mode.view(mode.setup(), "w")`, drawn with the mode's `ModeUI`), its name, its description and a "Jouer" button that creates the game directly. In development, a "Solo" button creates a solo game. Phones: thumbnail beside the text; wider screens: centred grid, thumbnail above the text.
+- **Join**: a field takes a game link or its bare code (the id after `/g/`).
+
+## Invite
+
+Opening a game link without a nickname shows the invite card: pick a nickname, then join. With a nickname already saved, the link opens the game directly.
 
 ## Board
 
