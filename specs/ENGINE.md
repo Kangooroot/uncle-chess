@@ -33,7 +33,7 @@ Rules:
 type Color = "w" | "b";
 type Square = string;                      // "a1" … "h8"
 type Dir = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
-type Seat = Color | "both" | "spectator";  // "both": solo play, development only
+type Seat = Color | "both" | "spectator";  // "both": solo play
 
 type Status =
   | { kind: "playing" }

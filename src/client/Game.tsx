@@ -164,5 +164,5 @@ function requestedMode(): { mode?: string } {
 }
 
 function soloRequested(): boolean {
-  return import.meta.env.DEV && new URLSearchParams(location.search).has("solo");
+  return new URLSearchParams(location.search).has("solo");
 }

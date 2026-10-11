@@ -114,12 +114,10 @@ function ModeCard(props: { mode: GameMode<unknown, unknown>; disabled: boolean; 
           <button disabled={props.disabled} onClick={() => props.onPlay(false)}>
             Jouer
           </button>
-          {/* Solo play (one player holds both sides) is only available in development. */}
-          {import.meta.env.DEV && (
-            <button className="secondary" disabled={props.disabled} onClick={() => props.onPlay(true)}>
-              Solo
-            </button>
-          )}
+          {/* Solo play: one player holds both sides. */}
+          <button className="secondary" disabled={props.disabled} onClick={() => props.onPlay(true)}>
+            Solo
+          </button>
         </div>
       </div>
     </article>

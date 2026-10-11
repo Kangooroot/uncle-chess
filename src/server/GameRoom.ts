@@ -38,8 +38,8 @@ export class GameRoom extends Server<Env> {
     const params = new URL(request.url).searchParams;
     const token = params.get("token") ?? "";
     const name = (params.get("name") ?? "").trim().slice(0, 30) || "Anonyme";
-    // Solo play (one player holds both sides) is only allowed in development.
-    const solo = import.meta.env.DEV && params.has("solo");
+    // Solo play: one player holds both sides (every side still free when they join).
+    const solo = params.has("solo");
 
     // The mode is fixed when the room is created: later connections can't change it.
     if (!this.created) {

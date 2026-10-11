@@ -5,7 +5,7 @@ export type Color = "w" | "b";
 export type Square = string; // "a1" … "h8"
 export type Dir = "n" | "s" | "e" | "w" | "ne" | "nw" | "se" | "sw";
 
-// "both": one player holds both sides (solo play, development only).
+// "both": one player holds both sides (solo play).
 export type Seat = Color | "both" | "spectator";
 
 export type Status =
