@@ -1,19 +1,11 @@
-import { useState, type CSSProperties, type ReactElement } from "react";
-import {
-  Chessboard,
-  defaultPieces,
-  type PieceDropHandlerArgs,
-  type PieceHandlerArgs,
-  type PieceRenderObject,
-  type PositionDataType,
-  type SquareHandlerArgs,
-} from "react-chessboard";
+import { useState, type CSSProperties } from "react";
+import { Chessboard, type PieceDropHandlerArgs, type PieceHandlerArgs, type SquareHandlerArgs } from "react-chessboard";
 import { usePartySocket } from "partysocket/react";
-import type { BoardView, Color, GameMode, Seat, Square, ViewPiece } from "../core";
+import type { BoardView, Color, GameMode, Seat, Square } from "../core";
 import { modes } from "../modes";
-import { modeUIs } from "../modes/ui";
 import type { ClientMessage, GameState, ServerMessage } from "../protocol";
 import { getToken } from "./identity";
+import { pieceRenderers, toPosition } from "./pieces";
 
 export function Game({ id, name }: { id: string; name: string }) {
   const [seat, setSeat] = useState<Seat | null>(null);
@@ -144,41 +136,6 @@ function squareStyles(view: BoardView, selected: Square | null, targets: Square[
   for (const square of view.check) styles[square] = CHECK;
   for (const square of targets) styles[square] = view.pieces[square] ? CAPTURE_HINT : MOVE_HINT;
   return styles;
-}
-
-/** react-chessboard piece type: colour first (see `canDragPiece`), then kind and direction, e.g. "wp-n". */
-function pieceType(piece: ViewPiece): string {
-  return piece.color + piece.kind + (piece.dir ? `-${piece.dir}` : "");
-}
-
-function toPosition(view: BoardView): PositionDataType {
-  const position: PositionDataType = {};
-  for (const [square, piece] of Object.entries(view.pieces)) {
-    if (piece) position[square] = { pieceType: pieceType(piece) };
-  }
-  return position;
-}
-
-// Kept across renders: react-chessboard uses them as components, a new
-// function would remount every piece.
-const renderers = new Map<string, () => ReactElement>();
-
-/** Draws each piece type of the view: the mode's own drawing, or react-chessboard's classic pieces. */
-function pieceRenderers(view: BoardView, mode: string, flipped: boolean): PieceRenderObject {
-  const result: PieceRenderObject = {};
-  for (const piece of Object.values(view.pieces)) {
-    if (!piece) continue;
-    const type = pieceType(piece);
-    const key = `${mode} ${flipped} ${type}`;
-    let render = renderers.get(key);
-    if (!render) {
-      const fallback = defaultPieces[piece.color + piece.kind.toUpperCase()];
-      render = () => modeUIs[mode]?.renderPiece(piece, flipped) ?? fallback?.() ?? <span>{piece.kind}</span>;
-      renderers.set(key, render);
-    }
-    result[type] = render;
-  }
-  return result;
 }
 
 function colorName(color: Color): string {
