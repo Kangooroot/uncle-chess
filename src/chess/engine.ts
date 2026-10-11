@@ -5,7 +5,11 @@ import { isSquare, opponent, toIndex, toSquare, type Color } from "../core";
 import type { Board, ChessMove, ChessRules, ChessState, Piece, Preset } from "./types";
 
 /** Board of a FEN-like placement (rank 8 first). Pawns ("p") get the direction of their side. */
-export function parsePlacement({ placement, pawnDirs }: Pick<Preset, "placement" | "pawnDirs">): Board {
+export function parsePlacement({
+  placement,
+  pawnDirs,
+  letters = {},
+}: Pick<Preset, "placement" | "pawnDirs" | "letters">): Board {
   const board: Board = Array(64).fill(null);
   placement.split("/").forEach((row, i) => {
     let file = 0;
@@ -15,9 +19,10 @@ export function parsePlacement({ placement, pawnDirs }: Pick<Preset, "placement"
         continue;
       }
       const color: Color = char === char.toUpperCase() ? "w" : "b";
-      const type = char.toLowerCase();
+      const letter = char.toLowerCase();
+      const { type, dirs } = letters[letter] ?? { type: letter, dirs: letter === "p" ? pawnDirs : undefined };
       const piece: Piece = { type, color, moved: false };
-      if (type === "p") piece.dir = pawnDirs[color];
+      if (dirs) piece.dir = dirs[color];
       board[(7 - i) * 8 + file++] = piece;
     }
   });

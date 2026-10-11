@@ -63,8 +63,16 @@ export type EndingContext = {
 
 export type EndingRule = (state: ChessState, context: EndingContext) => Status | null;
 
-/** Start position. `placement` is a FEN placement; pawns ("p") get the direction of their side. */
-export type Preset = { placement: string; pawnDirs: Record<Color, Dir>; turn: Color };
+/**
+ * Start position. `placement` is a FEN placement; pawns ("p") get the direction of their side.
+ * `letters` adds FEN letters for other piece types (e.g. a promoted pawn), with their direction per side if any.
+ */
+export type Preset = {
+  placement: string;
+  pawnDirs: Record<Color, Dir>;
+  letters?: Record<string, { type: string; dirs?: Record<Color, Dir> }>;
+  turn: Color;
+};
 
 export interface ChessRules {
   setup: Preset;

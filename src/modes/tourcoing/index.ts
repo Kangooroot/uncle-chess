@@ -34,7 +34,13 @@ const rarePawnGoal: EndingRule = (state) => {
 };
 
 export const tourcoingRules: ChessRules = {
-  setup: { placement: "3pbr1k/4pnq1/4ppnr/P4ppb/1PP4p/RNPP4/BQNP4/KBR1P3", pawnDirs: { w: "e", b: "s" }, turn: "w" },
+  // "x": a rare pawn, already promoted (white h2, black g1).
+  setup: {
+    placement: "3pbr1k/4pnq1/4ppnr/P4ppb/1PP4p/RNPP4/BQNP3X/KBR1P1x1",
+    pawnDirs: { w: "e", b: "s" },
+    letters: { x: { type: RARE_PAWN, dirs: RARE_PAWN_DIRS } },
+    turn: "w",
+  },
   pieces: { ...classicRules.pieces, [RARE_PAWN]: pawn },
   castling: swapCastling,
   promotion: {
