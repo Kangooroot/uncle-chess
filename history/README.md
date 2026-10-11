@@ -16,7 +16,7 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-08-tourcoing-mode](2026-10-08-tourcoing-mode.md) | Tourcoing chess, first rules round | tourcoing-rules-update |
 | [2026-10-09-tourcoing-rules-update](2026-10-09-tourcoing-rules-update.md) | Tourcoing start position, rare pawns | tourcoing-spec-validated, tourcoing-start-rare-pawns |
 | [2026-10-09-tourcoing-spec-validated](2026-10-09-tourcoing-spec-validated.md) | Tourcoing spec validated: last answers | |
-| [2026-10-09-solo-play](2026-10-09-solo-play.md) | Development-only solo play (`?solo`, `"both"` seat) | |
+| [2026-10-09-solo-play](2026-10-09-solo-play.md) | Development-only solo play (`?solo`, `"both"` seat) | solo-in-production |
 | [2026-10-09-lint-and-format](2026-10-09-lint-and-format.md) | Oxlint (not ESLint: TypeScript 7) and Prettier | |
 | [2026-10-09-chess-engine-design](2026-10-09-chess-engine-design.md) | Engine architecture: core / chess / modes, `ChessRules`, JSON state | |
 | [2026-10-09-lean-claude-context](2026-10-09-lean-claude-context.md) | Lighter `CLAUDE.md`: specs read on demand, this index | |
@@ -27,3 +27,4 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-11-home-screen](2026-10-11-home-screen.md) | Home screen redesign: mode cards with previews, join by link or code, invite card | |
 | [2026-10-11-tourcoing-start-rare-pawns](2026-10-11-tourcoing-start-rare-pawns.md) | Tourcoing start position: a rare pawn per side (white h2, black g1); `Preset.letters` | |
 | [2026-10-11-site-metadata](2026-10-11-site-metadata.md) | Public name "Jeux de tonton", French metadata, link preview image | |
+| [2026-10-11-solo-in-production](2026-10-11-solo-in-production.md) | Solo play also available in production | |
