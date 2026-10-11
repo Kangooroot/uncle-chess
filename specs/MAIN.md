@@ -2,6 +2,8 @@
 
 A platform of chessboard-based game modes invented by my uncle. 1v1 multiplayer, in the browser.
 
+Public name: **Jeux de tonton** (page title, home screen, link previews). `uncle-chess` stays the repository, package and Worker name.
+
 ## Language
 
 - **Everything written is in English**: source code, identifiers, comments, docs, specs, `history/` files, commit messages, branch names, file names.
