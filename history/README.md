@@ -26,3 +26,4 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-10-tourcoing-implementation](2026-10-10-tourcoing-implementation.md) | Tourcoing chess implemented (PR 2): swap castling, rare pawns, mode picker, `ModeUI` | |
 | [2026-10-11-home-screen](2026-10-11-home-screen.md) | Home screen redesign: mode cards with previews, join by link or code, invite card | |
 | [2026-10-11-tourcoing-start-rare-pawns](2026-10-11-tourcoing-start-rare-pawns.md) | Tourcoing start position: a rare pawn per side (white h2, black g1); `Preset.letters` | |
+| [2026-10-11-site-metadata](2026-10-11-site-metadata.md) | Public name "Jeux de tonton", French metadata, link preview image | |

@@ -83,7 +83,7 @@ function Hero() {
   return (
     <header className="hero">
       <h1>
-        <span aria-hidden="true">♞</span> Uncle Chess
+        <span aria-hidden="true">♞</span> Jeux de tonton
       </h1>
       <p>Des variantes d'échecs inventées par tonton, à jouer à deux.</p>
     </header>
