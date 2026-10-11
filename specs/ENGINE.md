@@ -138,7 +138,12 @@ interface CastlingRule {
 type EndingContext = { legalMoves: ChessMove[]; inCheck: boolean };  // of the side to move
 type EndingRule = (state: ChessState, context: EndingContext) => Status | null;
 
-type Preset = { placement: string; pawnDirs: Record<Color, Dir>; turn: Color };  // FEN-like placement
+type Preset = {
+  placement: string;                                                    // FEN-like placement
+  pawnDirs: Record<Color, Dir>;
+  letters?: Record<string, { type: string; dirs?: Record<Color, Dir> }>; // extra FEN letters, e.g. a rare pawn
+  turn: Color;
+};
 ```
 
 `ChessMove` is the internal, richer form of a move: `from`, `to`, the captured square (en passant), the rook move (castling), the en passant target it creates, the promoted piece. `EndingContext` gives ending rules what they need besides the state (which holds the history).
@@ -147,7 +152,7 @@ Building blocks provided by `src/chess/`, and what `classicRules` uses:
 
 | Extension point | Generic blocks | `classicRules` |
 |---|---|---|
-| `setup` | FEN placement parser, pawn directions | standard position, pawns `n` / `s` |
+| `setup` | FEN placement parser, pawn directions, extra letters for other piece types | standard position, pawns `n` / `s` |
 | `pieces` | `slider(dirs)`, `leaper(offsets)`, `king`, `pawn` | k, q, r, b, n, p |
 | `castling` | `standardCastling` (king two squares, rook jumps over); `swapCastling` (king ↔ rook of its rank or file) | `standardCastling` |
 | `promotion` | `promoteTo(types)`, on the edge of the pawn's direction | queen (default), rook, bishop, knight |
