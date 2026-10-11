@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { createChessMode, type ChessState } from "../../chess";
-import { tourcoing, tourcoingRules } from ".";
+import { RARE_PAWN, tourcoing, tourcoingRules } from ".";
 
 /** A Tourcoing game from another start placement (white to move unless `turn`). */
 function position(placement: string, turn: "w" | "b" = "w") {
@@ -27,7 +27,7 @@ describe("tourcoing", () => {
   it("starts with the armies in opposite corners", () => {
     const state = tourcoing.setup();
     const view = pieces(state);
-    expect(Object.keys(view)).toHaveLength(30);
+    expect(Object.keys(view)).toHaveLength(32);
     expect(view.a1).toEqual({ color: "w", kind: "k" });
     expect(view.h8).toEqual({ color: "b", kind: "k" });
     expect(view.b2).toEqual({ color: "w", kind: "q" });
@@ -37,6 +37,8 @@ describe("tourcoing", () => {
       expect(view[sq]).toEqual({ color: "w", kind: "p", dir: "e" });
     for (const sq of ["d8", "e7", "e6", "f6", "f5", "g5", "h4"])
       expect(view[sq]).toEqual({ color: "b", kind: "p", dir: "s" });
+    expect(view.h2).toEqual({ color: "w", kind: RARE_PAWN, dir: "n" });
+    expect(view.g1).toEqual({ color: "b", kind: RARE_PAWN, dir: "w" });
     expect(tourcoing.toPlay(state)).toBe("w");
     expect(tourcoing.status(state)).toEqual({ kind: "playing" });
   });
@@ -45,7 +47,15 @@ describe("tourcoing", () => {
     const state = tourcoing.setup();
     expect(moves(state, "a5")).toEqual(new Set(["b5", "c5"]));
     expect(moves(state, "c3")).toEqual(new Set()); // d3 is taken
-    expect(moves(play("a5b5")!, "h4")).toEqual(new Set(["h3", "h2"]));
+    expect(moves(play("a5b5")!, "h4")).toEqual(new Set(["h3"])); // h2 is taken
+  });
+
+  it("starts with a rare pawn on each side, unmoved", () => {
+    expect(moves(tourcoing.setup(), "h2")).toEqual(new Set(["h3"])); // h4 is taken
+    expect(moves(play("a5b5")!, "g1")).toEqual(new Set(["f1"])); // e1 is taken
+    // "x" is a rare pawn in a preset: it can move two squares, like any unmoved pawn.
+    expect(moves(position("7k/8/8/8/8/8/7X/K7"), "h2")).toEqual(new Set(["h3", "h4"]));
+    expect(moves(position("7k/8/8/8/8/8/8/K5x1", "b"), "g1")).toEqual(new Set(["f1", "e1"]));
   });
 
   it("captures diagonally forward, in the pawn's direction", () => {

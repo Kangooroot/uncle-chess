@@ -7,7 +7,7 @@ Mode id: `tourcoing`. First non-classic mode of the platform: a **close mode** (
 ## 1. Setup
 
 ### 1.1 Armies in opposite corners
-The two armies do not face each other across the board. Each one is gathered around a corner: **white around a1**, **black around h8**. Each side has 15 pieces: king, queen, 2 rooks, 2 bishops, 2 knights and **7 pawns**.
+The two armies do not face each other across the board. Each one is gathered around a corner: **white around a1**, **black around h8**. Each side has 16 pieces: king, queen, 2 rooks, 2 bishops, 2 knights, **7 pawns** and **1 rare pawn** (already promoted, see 4.2).
 
 ```
   8  .  .  .  p  b  r  .  k
@@ -16,12 +16,12 @@ The two armies do not face each other across the board. Each one is gathered aro
   5  P  .  .  .  .  p  p  b
   4  .  P  P  .  .  .  .  p
   3  R  N  P  P  .  .  .  .
-  2  B  Q  N  P  .  .  .  .
-  1  K  B  R  .  P  .  .  .
+  2  B  Q  N  P  .  .  .  X
+  1  K  B  R  .  P  .  x  .
      a  b  c  d  e  f  g  h
 ```
 
-Uppercase = white, lowercase = black. FEN placement: `3pbr1k/4pnq1/4ppnr/P4ppb/1PP4p/RNPP4/BQNP4/KBR1P3`.
+Uppercase = white, lowercase = black, `X` / `x` = rare pawn. FEN placement: `3pbr1k/4pnq1/4ppnr/P4ppb/1PP4p/RNPP4/BQNP3X/KBR1P1x1`.
 
 | Piece | White | Black |
 |---|---|---|
@@ -31,13 +31,16 @@ Uppercase = white, lowercase = black. FEN placement: `3pbr1k/4pnq1/4ppnr/P4ppb/1
 | Bishops | a2, b1 | e8, h5 |
 | Knights | b3, c2 | f7, g6 |
 | Pawns | a5, b4, c4, c3, d3, d2, e1 | d8, e7, e6, f6, f5, g5, h4 |
+| Rare pawn | h2 (moving north) | g1 (moving west) |
 
 The black army is the mirror image of the white army across the **a8–h1 diagonal** (square `(file, rank)` ↔ `(9 − rank, 9 − file)`), **except the bishops**, on purpose: **all four bishops are on light squares** (white a2 and b1, black e8 and h5).
+
+The rare pawns start as if just promoted, on their side's promotion line: they have not moved yet, so their first move can be one or two squares (see 4.2). They were added on 2026-10-11 (see [`history/2026-10-11-tourcoing-start-rare-pawns.md`](../../history/2026-10-11-tourcoing-start-rare-pawns.md)).
 
 No white pawn starts on rank 8 and no black pawn on the a-file: such a pawn would already stand on its rare pawn goal (see 4.3).
 
 ### 1.2 Start position is data
-The placement above is stored as a **preset** (data, e.g. JSON or FEN), not hard-coded in the rules, so it can be adjusted without touching code.
+The placement above is stored as a **preset** (data, e.g. JSON or FEN), not hard-coded in the rules, so it can be adjusted without touching code. The preset maps the extra FEN letter `x` to the rare pawn type, with its direction per side.
 
 ## 2. Pawn direction
 
