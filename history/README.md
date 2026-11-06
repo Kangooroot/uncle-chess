@@ -28,3 +28,4 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-11-tourcoing-start-rare-pawns](2026-10-11-tourcoing-start-rare-pawns.md) | Tourcoing start position: a rare pawn per side (white h2, black g1); `Preset.letters` | |
 | [2026-10-11-site-metadata](2026-10-11-site-metadata.md) | Public name "Jeux de tonton", French metadata, link preview image | |
 | [2026-10-11-solo-in-production](2026-10-11-solo-in-production.md) | Solo play also available in production | |
+| [2026-11-06-french-chess](2026-11-06-french-chess.md) | French chess: four interleaved boards on hexagons, hexagonal moves, rules from the uncle | |
