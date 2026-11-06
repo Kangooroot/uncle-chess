@@ -14,7 +14,7 @@ Idea recorded on 2026-10-07 (see [`history/2026-10-07-game-modes.md`](../history
 
 These are fixed and never change from one mode to another:
 
-- an **8x8 board** (squares `a1` … `h8`);
+- an **8x8 board** (squares `a1` … `h8`). French chess breaks this: four interleaved boards on a hexagonal grid (see [`modes/french.md`](modes/french.md)). To revisit when it is implemented;
 - **two players** (white `w` / black `b`), 1v1;
 - **multiplayer**: game by link, server room, side assignment, reconnection, spectators;
 - an **authoritative server**: every action goes through the mode's rules before being accepted.
@@ -87,6 +87,7 @@ Each mode has **tests** describing its specific rules. Its rules are written in 
 |---|---|---|---|
 | `classic` | Classic chess | (standard rules, tested against chess.js) | Playable |
 | `tourcoing` | Tourcoing chess | [`modes/tourcoing.md`](modes/tourcoing.md) | Playable |
+| `french` | French chess | [`modes/french.md`](modes/french.md) | Spec draft |
 
 ## Open questions
 
