@@ -106,10 +106,11 @@ A king is checkmated when it is in check and **no move of its player, on any boa
 |---|---|
 | A player mates **twice** | that player wins |
 | **Threefold repetition** of the whole position (all boards, side to move) | the player whose move produces the third occurrence **loses** (the uncle's "MVL" rule, as in Tourcoing chess) |
-| **Stalemate**: the player to move has no legal move on any board | draw (the whole game) |
-| **Insufficient material**, counted over all remaining boards: both players have only kings, or one has only kings and the other only kings and a single knight or a single bishop | draw (the whole game) |
+| **Stalemate**: the player to move has no legal move on any board | draw (the whole game), unless a player leads: then that player wins |
+| **Insufficient material**, counted over all remaining boards: both players have only kings, or one has only kings and the other only kings and a single knight or a single bishop | draw (the whole game), unless a player leads: then that player wins |
 | **Resignation** | the whole game is lost |
 
+- **A draw ending while a player leads** (1–0) is **not a draw**: the leading player wins. Confirmed for stalemate; assumed for insufficient material too, to be confirmed.
 - **No fifty-move rule.**
 - Insufficient material is counted on the whole game, not per board, because a piece can always reach another board. The classic "bishops of the same colour" draw does not apply: a bishop can change square colour (see 4).
 - The repetition and draw rules are detected and applied automatically, with no claim needed.
@@ -123,9 +124,8 @@ A king is checkmated when it is in check and **no move of its player, on any boa
 
 ## 9. Open questions
 
-- **Draw while leading**: if a draw ending (stalemate, insufficient material) happens while a player leads 1–0, is it still a draw?
+- **Insufficient material while leading**: does the leading player win, as with stalemate (assumed)?
 - **Insufficient material**: the precise list above is our proposal, based on the uncle's "only a knight, only a bishop, or kings against kings"; to be confirmed.
-- **Home screen**: what happens to the classic mode in the new order (see [`../UI.md`](../UI.md))?
 
 ## 10. Implementation notes
 

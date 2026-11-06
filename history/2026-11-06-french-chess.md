@@ -11,7 +11,8 @@ A new mode asked by the user on 2026-10-29: **Échecs Français**, four games of
 - **Check**: must always be answered at once, a hexagonal interposition included. Double check on one board is allowed; check on two boards with one move is forbidden.
 - **Mate**: no move on any board answers the check. The mater scores 1; every piece on that board is removed; the board becomes a forbidden zone that can be crossed but not stopped on. The mated player moves next, as usual.
 - **Endings**: first to two mates wins; threefold repetition loses for the player who produces it (the uncle's "MVL" rule, as in Tourcoing chess); stalemate (no move anywhere) and insufficient material (counted over the whole game) draw the whole game; resignation ends the whole game; no fifty-move rule.
-- **Home screen order**: Tourcoing chess, French chess, then the other modes.
+- **A draw ending while a player leads 1–0**: the leading player wins. Said for stalemate; assumed for insufficient material.
+- **Home screen order**: Tourcoing chess, French chess, classic chess, then the modes to come.
 - **UI**: default view is the hexagonal board with zoom. A second view with the four boards side by side comes in a separate ticket.
 
 ## Changed along the way
@@ -19,9 +20,8 @@ A new mode asked by the user on 2026-10-29: **Échecs Français**, four games of
 - A "vertical" hexagonal move was briefly mentioned, then withdrawn: hexagons do not touch straight up or down.
 
 ## Open questions
-- Is a draw ending still a draw when a player leads 1–0?
+- Does the leading player also win on insufficient material (assumed)?
 - Exact insufficient material list (our proposal in the spec).
-- Where the classic mode goes on the home screen.
 
 ## Points of attention
 - Breaks the "8x8 board for every mode" assumption: new geometry and a non-square `BoardView`, an in-house hexagonal renderer. Big pull request when implemented.
