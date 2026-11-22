@@ -32,4 +32,5 @@ Decided on 2026-10-08 (see [`history/2026-10-08-ci-and-deploy.md`](../history/20
 - `.github/workflows/ci.yml`: on every pull request, `yarn typecheck` and `yarn test`. A pull request is not mergeable while CI is red.
 - `.github/workflows/deploy.yml`: on every push to `main` (so on every merge), runs CI again, then `yarn deploy` to Cloudflare. Deployments are queued, never cancelled halfway.
 - Production is therefore always what is on `main`. Do not deploy a branch by hand.
+- `.github/workflows/preview.yml`: every pull request gets its own **preview**, a separate Worker named `uncle-chess-pr-<number>` with its own Durable Objects (games played there never touch production). It is deployed on every push, its URL is posted once as a pull request comment (and shown as the `preview` environment), and it is deleted when the pull request is closed. Pull requests from forks get no preview (no secrets).
 - Required GitHub secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`.

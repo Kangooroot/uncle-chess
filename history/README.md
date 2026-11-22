@@ -29,3 +29,4 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-10-11-site-metadata](2026-10-11-site-metadata.md) | Public name "Jeux de tonton", French metadata, link preview image | |
 | [2026-10-11-solo-in-production](2026-10-11-solo-in-production.md) | Solo play also available in production | |
 | [2026-11-06-french-chess](2026-11-06-french-chess.md) | French chess: four interleaved boards on hexagons, hexagonal moves, rules from the uncle | |
+| [2026-11-21-pr-previews](2026-11-21-pr-previews.md) | One preview Worker per pull request, deleted on close; first step towards spec-driven agent PRs | |
