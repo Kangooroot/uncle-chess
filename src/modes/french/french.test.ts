@@ -150,6 +150,17 @@ describe("french", () => {
       expect(french.status(state)).toEqual({ kind: "playing" });
     });
 
+    it("can be given by a piece jumping in from another board", () => {
+      // The blue rook on d8 jumps one hexagon to the right, onto red:e8.
+      const state = play(
+        "blue:d8-red:e8",
+        fromPlacements(["7k/6pp/8/8/8/8/8/6K1", "3R4/8/8/8/8/8/8/k7", "8/8/8/8/8/8/8/Q6K", null]),
+      )!;
+      expect(view(state).score).toEqual({ w: 1, b: 0 });
+      expect(view(state).forbidden).toEqual(["red", "yellow"]);
+      expect(french.toPlay(state)).toBe("b");
+    });
+
     it("wins the game at the second mate", () => {
       const state = play("red:e1-red:e8", fromPlacements(BACK_RANK, { score: { w: 1, b: 0 } }))!;
       expect(french.status(state)).toEqual({ kind: "win", winner: "w", reason: "mates" });
@@ -205,6 +216,14 @@ describe("french", () => {
     it("castles", () => {
       const state = play("red:e1-red:g1", fromPlacements(["r3k2r/8/8/8/8/8/8/R3K2R", EMPTY, EMPTY, EMPTY]))!;
       expect(view(state).pieces["red:f1"]).toEqual({ color: "w", kind: "r" });
+    });
+
+    it("takes en passant on the pawn's own board only", () => {
+      const start = fromPlacements(["4k3/3p4/8/4P3/8/8/8/4K3", "4k3/8/8/4P3/8/8/8/4K3", null, null], { turn: "b" });
+      const state = play("red:d7-red:d5", start)!;
+      expect(classicTo(state, "red:e5").has("red:d6")).toBe(true);
+      expect(classicTo(state, "blue:e5").has("blue:d6")).toBe(false);
+      expect(view(play("red:e5-red:d6", state)!).pieces["red:d5"]).toBeUndefined();
     });
 
     it("promotes into a queen by default", () => {

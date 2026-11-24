@@ -74,18 +74,7 @@ function attackedOn(board: Board, square: number, by: Color): boolean {
   return board.some((piece, sq) => piece?.color === by && pieces[piece.type].attacks(board, sq).includes(square));
 }
 
-/** Boards where a royal piece of `color` is attacked. A piece only attacks on its own board. */
-export function checkedBoards(boards: Board[], color: Color): number[] {
-  return boards.flatMap((board, b) =>
-    board.some(
-      (piece, sq) => piece?.color === color && pieces[piece.type].royal && attackedOn(board, sq, opponent(color)),
-    )
-      ? [b]
-      : [],
-  );
-}
-
-/** Cells of the royal pieces of `color` that are attacked. */
+/** Cells of the royal pieces of `color` that are attacked. A piece only attacks on its own board. */
 export function checkedRoyals(boards: Board[], color: Color): number[] {
   return boards.flatMap((board, b) =>
     board.flatMap((piece, sq) =>
@@ -94,6 +83,11 @@ export function checkedRoyals(boards: Board[], color: Color): number[] {
         : [],
     ),
   );
+}
+
+/** Boards where a royal piece of `color` is attacked (indices into `boards`). */
+export function checkedBoards(boards: Board[], color: Color): number[] {
+  return [...new Set(checkedRoyals(boards, color).map(boardOf))];
 }
 
 const fromChessMove = (board: number, move: ChessMove): FrenchMove => ({

@@ -4,7 +4,7 @@
 
 import type { Color, GameMode, ViewPiece } from "../../core";
 import { STANDARD_REASONS } from "../../chess";
-import { BOARDS, toCell, type BoardId, type Cell } from "./board";
+import { BOARDS, cellOf, toCell, type BoardId, type Cell } from "./board";
 import {
   checkedRoyals,
   findMove,
@@ -57,7 +57,11 @@ export const french: GameMode<FrenchState, FrenchAction, FrenchView> = {
     state.boards.forEach((board, b) =>
       board.forEach((piece, sq) => {
         if (piece)
-          pieces[toCell(b * 64 + sq)] = { color: piece.color, kind: piece.type, ...(piece.dir && { dir: piece.dir }) };
+          pieces[toCell(cellOf(b, sq))] = {
+            color: piece.color,
+            kind: piece.type,
+            ...(piece.dir && { dir: piece.dir }),
+          };
       }),
     );
     const moves: FrenchView["moves"] = {};
