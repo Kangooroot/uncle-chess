@@ -27,7 +27,11 @@ export type BoardView = {
   moves: Partial<Record<Square, Square[]>>; // legal destinations of each piece of the side to move (move hints)
 };
 
-export interface GameMode<State, Action> {
+/**
+ * A game mode. `View` is what the UI draws: a single 8x8 `BoardView` by
+ * default; a mode on another kind of board (French chess) has its own.
+ */
+export interface GameMode<State, Action, View = BoardView> {
   id: string;
   name: string;
   description: string;
@@ -40,7 +44,7 @@ export interface GameMode<State, Action> {
   /** Who must play, `null` once the game is over. */
   toPlay(state: State): Color | null;
   status(state: State): Status;
-  view(state: State, viewer: Seat): BoardView;
+  view(state: State, viewer: Seat): View;
 }
 
 export function opponent(color: Color): Color {
