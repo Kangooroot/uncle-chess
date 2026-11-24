@@ -1,6 +1,6 @@
 # French chess
 
-> **Status: draft**, rules gathered with the uncle between 2026-10-29 and 2026-11-06 (see [`history/2026-11-06-french-chess.md`](../../history/2026-11-06-french-chess.md)). A few points are still open (section 9). Not implemented.
+> **Status: draft**, rules gathered with the uncle between 2026-10-29 and 2026-11-06 (see [`history/2026-11-06-french-chess.md`](../../history/2026-11-06-french-chess.md)). A few points are still open (section 9). **Engine implemented** on 2026-11-24 (`src/modes/french/`, see [`history/2026-11-24-french-chess-engine.md`](../../history/2026-11-24-french-chess-engine.md)); not playable yet: the hexagonal board UI comes next.
 
 Mode id: `french`. Display name: **Échecs Français**. A **distant mode** (see [`../GAME-MODES.md`](../GAME-MODES.md)): **four games of chess played at once** on a single board of hexagons, where pieces can jump from one game to another. Anything not mentioned here follows classic chess rules: "do not change the classic rules without a reason".
 
@@ -129,6 +129,13 @@ A king is checkmated when it is in check and **no move of its player, on any boa
 
 ## 10. Implementation notes
 
-- Breaks the platform's "8x8 board for every mode" assumption ([`../GAME-MODES.md`](../GAME-MODES.md)): new board geometry, new coordinates, a `BoardView` that is not a single chessboard. The `GameMode` contract and the protocol stay mode-agnostic, but the view and the client rendering need a generalisation. A big pull request, to review carefully.
-- The engine can model the game as **four logical 8×8 boards** plus a hexagonal adjacency map. Classic piece movement from `src/chess/` can then be reused per board; legality (check, mate, stalemate, the two-board check ban, hexagonal interpositions) is global and new.
-- State: the four boards, the forbidden zones, the score, castling and en passant rights per board, the position history (for repetition).
+Engine in `src/modes/french/` (2026-11-24):
+
+- **Cells**: a square of one board, named `"<board>:<square>"` (`"red:e4"`), boards being `red`, `blue`, `green`, `yellow` (1.1). Internally an index `0…255` (`board * 64 + square`). `board.ts` converts cells to hexagonal rows and columns (1.2) and walks straight hexagonal lines in doubled coordinates.
+- **State** (`FrenchState`, plain JSON): the four boards (the chess family's `Board`), the forbidden boards, the score, the side to move, the en passant cells, the position history (repetition), the last move and the status.
+- **Action**: `{ from: Cell; to: Cell; promotion?: string }`, like classic chess. A destination reachable both by a classic and a hexagonal move gives the same position; the classic move is used.
+- **Reuse**: classic moves, castling, en passant and promotion come from `src/chess/` (`classicRules`), called on one board at a time. Legality (no royal left in check, no check on two boards), hexagonal moves, mates and endings are global and written in the mode.
+- **View** (`FrenchView`): pieces by cell, classic and hexagonal destinations in two separate lists (the UI shows them differently), checks, last move, forbidden boards and score. `GameMode` takes the view type as a third type parameter (default: the 8x8 `BoardView`).
+- **Not in the registry yet**: the client only draws 8x8 boards. The mode is registered with its hexagonal board UI.
+- **Status reasons**: `mates` (second mate), `repetition` (the player who produced it loses), `stalemate` and `material` (draws), `stalemate-lead` and `material-lead` (the leader wins).
+- **Performance**: about 3 ms to list the legal moves of a mid-game position (some 200 moves), about 10 ms per move including the view, in a random game.
