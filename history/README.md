@@ -32,3 +32,4 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-11-21-pr-previews](2026-11-21-pr-previews.md) | One preview Worker per pull request, deleted on close; first step towards spec-driven agent PRs | |
 | [2026-11-22-blank-screen-fix](2026-11-22-blank-screen-fix.md) | Blank screen during games: missing piece renderer during react-chessboard animations; error boundary | |
 | [2026-11-24-french-chess-colours](2026-11-24-french-chess-colours.md) | French chess colours: four hues with light and dark shades, white and black pieces | |
+| [2026-11-24-french-chess-engine](2026-11-24-french-chess-engine.md) | French chess engine: `src/modes/french/`, cells "red:e4", `GameMode` view type parameter, not registered until the UI | |

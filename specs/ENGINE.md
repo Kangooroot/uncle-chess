@@ -40,7 +40,9 @@ type Status =
   | { kind: "win"; winner: Color; reason: string }  // "checkmate", "rare-pawn", "repetition"…
   | { kind: "draw"; reason: string };               // "stalemate", "repetition", "fifty-moves", "material"…
 
-interface GameMode<State, Action> {
+// View: what the UI draws. A single 8x8 BoardView by default; a mode on
+// another kind of board has its own (French chess: FrenchView).
+interface GameMode<State, Action, View = BoardView> {
   id: string;
   name: string;
   description: string;
@@ -50,7 +52,7 @@ interface GameMode<State, Action> {
   play(state: State, action: Action, player: Color): State | null;  // null = illegal
   toPlay(state: State): Color | null;                                // null = game over
   status(state: State): Status;
-  view(state: State, viewer: Seat): BoardView;
+  view(state: State, viewer: Seat): View;
 }
 
 type BoardView = {
