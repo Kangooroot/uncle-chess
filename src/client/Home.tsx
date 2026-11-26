@@ -3,12 +3,11 @@
 // screen, shown when a game link is opened without a nickname.
 
 import { useMemo, useState } from "react";
-import { Chessboard } from "react-chessboard";
-import type { GameMode } from "../core";
+import type { BaseView, GameMode } from "../core";
 import { modes } from "../modes";
+import { modeUIs } from "../modes/ui";
 import { parseGameInput } from "./gameLink";
 import { randomId } from "./identity";
-import { pieceRenderers, toPosition } from "./pieces";
 
 export function Home({ name, onNameChange }: { name: string; onNameChange: (name: string) => void }) {
   const [editing, setEditing] = useState(!name);
@@ -90,22 +89,18 @@ function Hero() {
   );
 }
 
-function ModeCard(props: { mode: GameMode<unknown, unknown>; disabled: boolean; onPlay: (solo: boolean) => void }) {
+function ModeCard(props: {
+  mode: GameMode<unknown, unknown, BaseView>;
+  disabled: boolean;
+  onPlay: (solo: boolean) => void;
+}) {
   const { mode } = props;
   const view = useMemo(() => mode.view(mode.setup(), "w"), [mode]);
+  const { Preview } = modeUIs[mode.id];
   return (
     <article className="card mode-card">
       <div className="preview" aria-hidden="true">
-        <Chessboard
-          options={{
-            id: `preview-${mode.id}`,
-            position: toPosition(view),
-            pieces: pieceRenderers(view, mode.id, false),
-            allowDragging: false,
-            showNotation: false,
-            showAnimations: false,
-          }}
-        />
+        <Preview view={view} />
       </div>
       <div className="mode-body">
         <h3>{mode.name}</h3>

@@ -18,7 +18,7 @@ Opening a game link without a nickname shows the invite card: pick a nickname, t
 
 ## Board
 
-The board renders the mode's `BoardView` (see [`ENGINE.md`](ENGINE.md)) with react-chessboard. Interactions, in the style of chess.com (decided on 2026-10-09, see [`history/2026-10-09-move-hints.md`](../history/2026-10-09-move-hints.md)):
+Each mode draws its own board (`ModeUI`, see [`ENGINE.md`](ENGINE.md)). The 8x8 modes render their `BoardView` with react-chessboard; French chess has its own hexagonal board (see [`modes/french.md`](modes/french.md)). Interactions of the 8x8 board, in the style of chess.com (decided on 2026-10-09, see [`history/2026-10-09-move-hints.md`](../history/2026-10-09-move-hints.md)):
 
 - **Moving a piece**: drag and drop it, or click it then click a destination.
 - **Selection**: clicking one of your pieces, on your turn, selects it (yellow square) and shows its legal destinations (`BoardView.moves`). Clicking another of your pieces selects it instead; clicking the selected piece again or any other square cancels. Dragging a piece selects it too, so its destinations show while dragging. The selection is cleared after a move and whenever the server sends a new state.
@@ -28,3 +28,7 @@ The board renders the mode's `BoardView` (see [`ENGINE.md`](ENGINE.md)) with rea
 - **Mode drawings**: a mode can draw its pieces its own way (`ModeUI`). Tourcoing puts an arrow on each pawn, pointing where it moves, and a gold halo on rare pawns.
 - **Castling by moving onto a rook** (Tourcoing's swap castling): the king's destination is the rook's square, shown with the capture ring.
 - The player's side is at the bottom. Spectators and solo players see white at the bottom.
+
+## Rules
+
+Planned (decided on 2026-11-26, see [`history/2026-11-26-french-chess-client.md`](../history/2026-11-26-french-chess-client.md)): **every mode** gets a rules modal, opened from the game screen (and the mode card), with a text provided by the mode. First needed by French chess, but Tourcoing chess benefits too.
