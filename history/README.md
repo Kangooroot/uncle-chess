@@ -34,3 +34,4 @@ One line per file, oldest first. Read only the files relevant to the current top
 | [2026-11-24-french-chess-colours](2026-11-24-french-chess-colours.md) | French chess colours: four hues with light and dark shades, white and black pieces | |
 | [2026-11-24-french-chess-engine](2026-11-24-french-chess-engine.md) | French chess engine: `src/modes/french/`, cells "red:e4", `GameMode` view type parameter, not registered until the UI | |
 | [2026-11-26-french-chess-client](2026-11-26-french-chess-client.md) | French chess client plan (3 PRs), each mode provides its board (`ModeUI` with `Board` and `Preview`), drag from a piece moves it, rules modal for all modes | |
+| [2026-11-26-french-chess-board](2026-11-26-french-chess-board.md) | French chess playable: SVG hexagonal board, hints, score and forbidden boards, home order Tourcoing, French, classic | |
