@@ -87,7 +87,7 @@ Each mode has **tests** describing its specific rules. Its rules are written in 
 |---|---|---|---|
 | `classic` | Classic chess | (standard rules, tested against chess.js) | Playable |
 | `tourcoing` | Tourcoing chess | [`modes/tourcoing.md`](modes/tourcoing.md) | Playable |
-| `french` | French chess | [`modes/french.md`](modes/french.md) | Engine done, not in the registry until its UI exists |
+| `french` | French chess | [`modes/french.md`](modes/french.md) | Playable (hexagonal board); zoom, dragging and rules modal to come |
 
 ## Open questions
 

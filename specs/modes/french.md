@@ -1,6 +1,6 @@
 # French chess
 
-> **Status: draft**, rules gathered with the uncle between 2026-10-29 and 2026-11-06 (see [`history/2026-11-06-french-chess.md`](../../history/2026-11-06-french-chess.md)). A few points are still open (section 9). **Engine implemented** on 2026-11-24 (`src/modes/french/`, see [`history/2026-11-24-french-chess-engine.md`](../../history/2026-11-24-french-chess-engine.md)); not playable yet: the hexagonal board UI comes next.
+> **Status: draft**, rules gathered with the uncle between 2026-10-29 and 2026-11-06 (see [`history/2026-11-06-french-chess.md`](../../history/2026-11-06-french-chess.md)). A few points are still open (section 9). **Engine implemented** on 2026-11-24 (`src/modes/french/`, see [`history/2026-11-24-french-chess-engine.md`](../../history/2026-11-24-french-chess-engine.md)); **playable** since 2026-11-26 with its hexagonal board (see [`history/2026-11-26-french-chess-board.md`](../../history/2026-11-26-french-chess-board.md)). Zoom, dragging and the rules modal come next.
 
 Mode id: `french`. Display name: **Échecs Français**. A **distant mode** (see [`../GAME-MODES.md`](../GAME-MODES.md)): **four games of chess played at once** on a single board of hexagons, where pieces can jump from one game to another. Anything not mentioned here follows classic chess rules: "do not change the classic rules without a reason".
 
@@ -118,7 +118,9 @@ A king is checkmated when it is in check and **no move of its player, on any boa
 - **Colours**: four hues with a light and a dark shade, white and black pieces with a thin contrasting outline (see 1.1). Mockup palette: red `#f3c1b6` / `#c0452f`, blue `#bcd6f1` / `#2f6aae`, green `#c4e2b8` / `#3d8648`, yellow `#f5e3a3` / `#c4951a`.
 - **Selection**: classic destinations get a dark dot (a ring for a capture, as on chess.com), hexagonal destinations a small white hexagon: two colours and two shapes. The other boards are dimmed, so the selected piece's board is easy to follow.
 - Red and green are the hardest pair for colour-blind players: the light/dark shades and the dimming help, but check it before release.
-- Score (mates per player) and forbidden zones must be visible at a glance.
+- Score (mates per player) and forbidden zones must be visible at a glance: a line above the board gives the mates of each side and names the forbidden boards, whose hexagons are faded and hatched.
+- **Other marks**: the last move outlines its two hexagons (dark on light shades, white on dark ones); a king in check gets a red hexagon with a white outline, and the selected piece a yellow one with a dark shadow, so both stay visible on the red and yellow boards. Black pieces get a thin light halo, for the dark shades. A legend under the board explains the two kinds of hints.
+- The player's side is at the bottom: black players see the board turned around (point reflection).
 
 ## 9. Open questions
 
@@ -134,6 +136,6 @@ Engine in `src/modes/french/` (2026-11-24):
 - **Action**: `{ from: Cell; to: Cell; promotion?: string }`, like classic chess. A destination reachable both by a classic and a hexagonal move gives the same position; the classic move is used.
 - **Reuse**: classic moves, castling, en passant and promotion come from `src/chess/` (`classicRules`), called on one board at a time. Legality (no royal left in check, no check on two boards), hexagonal moves, mates and endings are global and written in the mode.
 - **View** (`FrenchView`): pieces by cell, classic and hexagonal destinations in two separate lists (the UI shows them differently), checks, last move, forbidden boards and score. `GameMode` takes the view type as a third type parameter (default: the 8x8 `BoardView`).
-- **Not in the registry yet**: the client only draws 8x8 boards. The mode is registered with its hexagonal board UI.
+- **Board UI** (2026-11-26): `ui.tsx` draws the 256 hexagons in SVG (`frenchUI`, a `ModeUI` with its own `Board` and `Preview`); `layout.ts` places them (pure geometry, tested). Pieces reuse react-chessboard's drawings, like the other modes. Click a piece, then a destination; dragging and zoom come with the next step.
 - **Status reasons**: `mates` (second mate), `repetition` (the player who produced it loses), `stalemate` and `material` (draws), `stalemate-lead` and `material-lead` (the leader wins).
 - **Performance**: about 3 ms to list the legal moves of a mid-game position (some 200 moves), about 10 ms per move including the view, in a random game.
