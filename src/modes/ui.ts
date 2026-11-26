@@ -5,6 +5,8 @@ import type { ComponentType } from "react";
 import type { BaseView, Color, GameMode } from "../core";
 import { squareBoardUI } from "../client/SquareBoard";
 import { classic } from "./classic";
+import { french } from "./french";
+import { frenchUI } from "./french/ui";
 import { tourcoing } from "./tourcoing";
 import { tourcoingUI } from "./tourcoing/ui";
 
@@ -34,4 +36,5 @@ function entry<View extends BaseView>(mode: GameMode<unknown, unknown, View>, ui
 export const modeUIs: Record<string, ModeUI<BaseView>> = Object.fromEntries([
   entry(classic, squareBoardUI()),
   entry(tourcoing, tourcoingUI),
+  entry(french, frenchUI),
 ]);

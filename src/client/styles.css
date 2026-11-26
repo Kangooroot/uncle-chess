@@ -257,3 +257,170 @@ button.link {
       0 12px 32px rgba(0, 0, 0, 0.12);
   }
 }
+
+/* French chess: the hexagonal board (src/modes/french/ui.tsx) */
+
+.game:has(.hex-board) {
+  max-width: 960px;
+}
+
+.hex-board {
+  --hex-gap: var(--bg);
+  --hint: #12151b;
+  display: grid;
+  gap: 8px;
+}
+
+.hex-board-svg {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* The whole board stays on screen, under the header and above the status line. */
+  max-height: calc(100dvh - 220px);
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hex-cell {
+  stroke: var(--hex-gap);
+  stroke-width: 1.6;
+  transition: opacity 150ms;
+}
+
+.hex-cell.dim {
+  opacity: 0.4;
+}
+
+.hex-cell.forbidden {
+  opacity: 0.3;
+}
+
+.playable .hex-cell {
+  cursor: pointer;
+}
+
+.hex-marks,
+.hex-pieces,
+.hex-hints {
+  pointer-events: none;
+}
+
+.hex-hatch {
+  stroke: rgba(0, 0, 0, 0.35);
+  stroke-width: 1.5;
+}
+
+.hex-last {
+  fill: none;
+  stroke-width: 2;
+}
+
+.hex-last.on-light {
+  stroke: rgba(0, 0, 0, 0.4);
+}
+
+.hex-last.on-dark {
+  stroke: rgba(255, 255, 255, 0.75);
+}
+
+/* White outlines keep the check and the selection visible on red and yellow boards. */
+.hex-check {
+  fill: rgba(235, 64, 52, 0.9);
+  stroke: #fff;
+  stroke-width: 2.5;
+}
+
+.hex-selected {
+  fill: none;
+  stroke: #ffd84a;
+  stroke-width: 3.2;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.8));
+}
+
+/* Black pieces need a light halo on the dark shades. */
+.hex-piece.black {
+  filter: drop-shadow(0 0 0.6px rgba(255, 255, 255, 0.9));
+}
+
+.hint-move {
+  fill: var(--hint);
+  fill-opacity: 0.8;
+  stroke: #fff;
+  stroke-width: 1.4;
+}
+
+.hint-capture {
+  fill: none;
+  stroke: var(--hint);
+  stroke-opacity: 0.75;
+  stroke-width: 3;
+}
+
+.hint-hex {
+  fill: #fff;
+  stroke: var(--hint);
+  stroke-width: 2.4;
+  stroke-linejoin: round;
+}
+
+.hex-scores,
+.hex-legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 16px;
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.hex-score-label,
+.hex-forbidden,
+.hex-legend {
+  color: var(--muted);
+}
+
+.hex-score {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.chip {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1px solid var(--muted);
+}
+
+.chip.white {
+  background: #fbfaf6;
+}
+
+.chip.black {
+  background: #1d1f24;
+}
+
+.hex-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hex-legend svg {
+  width: 20px;
+  height: 20px;
+}
+
+.hex-preview {
+  aspect-ratio: 1;
+  display: grid;
+  align-items: center;
+  background: var(--bg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hex-cell {
+    transition: none;
+  }
+}
