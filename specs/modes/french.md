@@ -113,6 +113,7 @@ A king is checkmated when it is in check and **no move of its player, on any boa
 ## 8. User interface
 
 - **Default view**: the whole hexagonal board, with **zoom in / out**. Needs an in-house hexagonal renderer (react-chessboard only draws square boards).
+- **Dragging** (decided on 2026-11-26): a drag that starts on one of the player's pieces moves that piece; any other drag pans the zoomed board. Clicking a piece then a destination works too.
 - **Second view (later, separate ticket)**: the four boards side by side as four classic 8×8 boards in a square, with a way to switch between them. Hexagonal moves then need a way to pick the arrival board.
 - **Colours**: four hues with a light and a dark shade, white and black pieces with a thin contrasting outline (see 1.1). Mockup palette: red `#f3c1b6` / `#c0452f`, blue `#bcd6f1` / `#2f6aae`, green `#c4e2b8` / `#3d8648`, yellow `#f5e3a3` / `#c4951a`.
 - **Selection**: classic destinations get a dark dot (a ring for a capture, as on chess.com), hexagonal destinations a small white hexagon: two colours and two shapes. The other boards are dimmed, so the selected piece's board is easy to follow.
