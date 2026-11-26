@@ -3,11 +3,14 @@
 
 import type { BaseView, GameMode } from "../core";
 import { classic } from "./classic";
+import { french } from "./french";
 import { tourcoing } from "./tourcoing";
 
+/** In the order of the home screen (specs/UI.md). */
 export const modes: Record<string, GameMode<unknown, unknown, BaseView>> = {
-  [classic.id]: classic,
   [tourcoing.id]: tourcoing,
+  [french.id]: french,
+  [classic.id]: classic,
 };
 
 export const defaultMode = classic;
