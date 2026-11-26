@@ -19,6 +19,12 @@ export type ViewPiece = {
   dir?: Dir; // pawn-like pieces: which way they move
 };
 
+/** What every mode's view has: the game screen's status line reads it. */
+export type BaseView = {
+  turn: Color | null;
+  check: string[]; // royal pieces in check
+};
+
 export type BoardView = {
   pieces: Partial<Record<Square, ViewPiece>>;
   turn: Color | null;
@@ -31,7 +37,7 @@ export type BoardView = {
  * A game mode. `View` is what the UI draws: a single 8x8 `BoardView` by
  * default; a mode on another kind of board (French chess) has its own.
  */
-export interface GameMode<State, Action, View = BoardView> {
+export interface GameMode<State, Action, View extends BaseView = BoardView> {
   id: string;
   name: string;
   description: string;

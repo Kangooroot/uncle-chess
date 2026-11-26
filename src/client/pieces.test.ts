@@ -10,6 +10,7 @@ describe("pieceRenderers", () => {
   // react-chessboard keeps drawing the previous position while it animates a
   // move: a piece type that just left the board must still have a renderer.
   it("keeps the renderers of piece types that just left the board", () => {
+    const renderers = pieceRenderers();
     const before = view({
       e1: { color: "w", kind: "k" },
       e8: { color: "b", kind: "k" },
@@ -17,15 +18,23 @@ describe("pieceRenderers", () => {
     });
     const after = view({ e1: { color: "w", kind: "k" }, e8: { color: "b", kind: "k" } });
 
-    pieceRenderers(before, "classic", false);
-    expect(pieceRenderers(after, "classic", false).bn).toBeTypeOf("function");
+    renderers(before, false);
+    expect(renderers(after, false).bn).toBeTypeOf("function");
   });
 
   it("keeps the renderer of a pawn whose direction just changed", () => {
-    pieceRenderers(view({ h3: { color: "w", kind: "p", dir: "e" } }), "tourcoing", false);
-    const after = pieceRenderers(view({ h3: { color: "w", kind: "p", dir: "n" } }), "tourcoing", false);
+    const renderers = pieceRenderers(() => null);
+    renderers(view({ h3: { color: "w", kind: "p", dir: "e" } }), false);
+    const after = renderers(view({ h3: { color: "w", kind: "p", dir: "n" } }), false);
 
     expect(after["wp-e"]).toBeTypeOf("function");
     expect(after["wp-n"]).toBeTypeOf("function");
+  });
+
+  it("keeps one set of renderers per orientation", () => {
+    const renderers = pieceRenderers();
+    const position = view({ e1: { color: "w", kind: "k" } });
+    expect(renderers(position, false).wk).not.toBe(renderers(position, true).wk);
+    expect(renderers(position, false).wk).toBe(renderers(position, false).wk);
   });
 });
